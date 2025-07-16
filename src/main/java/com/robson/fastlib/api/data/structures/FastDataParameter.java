@@ -44,7 +44,7 @@ public class FastDataParameter<A> {
 
             case STRING -> ((String) data).length() << BYTE_MODIFIER;
 
-            case GENERIC_DATA -> ((GenericData) data).getSize();
+            case GENERIC_DATA -> 1;
 
         };
     }

@@ -56,7 +56,7 @@ public class LodTick {
     }
 
     static short computeDistance(Vec3 vec3){
-        if (vec3 == null){
+        if (vec3 == null || Minecraft.getInstance().gameRenderer.getMainCamera() == null){
             return 1;
         }
         return (short) (1 + (Math.pow(1.075, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceTo(vec3))));
