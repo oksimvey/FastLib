@@ -1,11 +1,8 @@
 package com.robson.fastlib.mixins;
 
-import com.mojang.blaze3d.Blaze3D;
-import com.robson.fastlib.api.data.types.PlayerData;
+import com.robson.fastlib.api.data.manager.PlayerDataManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
-import net.minecraft.util.SmoothDouble;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Final;
@@ -19,29 +16,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @OnlyIn(Dist.CLIENT)
 public abstract class MouseHandlerMixin {
 
-    private static float lasrota = 0;
+
+    @Shadow @Final private Minecraft minecraft;
 
     @Shadow private double accumulatedDX;
 
     @Shadow private double accumulatedDY;
 
-    @Shadow private double lastMouseEventTime;
+    @Inject(method = "turnPlayer", at = @At(value = "HEAD"))
+    private void onTurnStart(CallbackInfo ci) {
+        var data = PlayerDataManager.get(this.minecraft.player);
+        if (data == null) return;
+        data.getCamera().handleMouseMovement(this.minecraft.player, this.accumulatedDX, this.accumulatedDY);
+    }
 
-    @Shadow public abstract boolean isMouseGrabbed();
-
-    @Shadow @Final private Minecraft minecraft;
-
-    @Shadow @Final private SmoothDouble smoothTurnX;
-
-    @Shadow @Final private SmoothDouble smoothTurnY;
-
-    @Inject(
-                method = {"turnPlayer()V"},
-                at = {@At("HEAD")},
-                cancellable = true
-        )
-        private void preTurnPlayer(CallbackInfo ci) {
-        PlayerData.acumulateddx = (float) accumulatedDX;
-        PlayerData.accumulateddy = (float) accumulatedDY;
-
-    }}
+    @Inject(method = "turnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V"), cancellable = true)
+    private void onTurn(CallbackInfo ci) {
+        ci.cancel();
+    }
+}

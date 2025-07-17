@@ -1,43 +1,35 @@
 package com.robson.fastlib.api.utils;
 
+import com.robson.fastlib.api.utils.math.FastVec2f;
+import com.robson.fastlib.api.utils.math.FastVec3f;
+
 public interface CamUtils {
+
+static CameraParameter createParameter(FastVec3f pos, FastVec2f rot){
+    return new CameraParameter(pos, rot);
+}
+
 
     class CameraParameter {
 
-        float x;
+        public static float rx = 0;
+        public static float ry = 0;
 
-        float y;
+        FastVec3f position;
 
-        float z;
+       FastVec2f rotation;
 
-        float yaw;
-
-        float pitch;
-
-        public CameraParameter(float x, float y, float z, float yaw, float pitch) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.yaw = yaw;
-            this.pitch = pitch;
+        public CameraParameter(FastVec3f pos, FastVec2f rot) {
+            this.position = pos;
+           this.rotation = rot;
         }
 
-        public float getX() {
-            return x;
+        public FastVec3f getPosition() {
+            return position;
         }
 
-        public float getY() {
-            return y;
-        }
-        public float getZ() {
-            return z;
-        }
-
-        public float getYaw() {
-            return yaw;
-        }
-        public float getPitch() {
-            return pitch;
-        }
+       public FastVec2f getRotation() {
+            return rotation;
+       }
     }
 }
