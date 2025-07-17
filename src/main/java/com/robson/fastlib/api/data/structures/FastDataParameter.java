@@ -1,7 +1,5 @@
 package com.robson.fastlib.api.data.structures;
 
-import com.robson.fastlib.api.GenericData;
-
 public class FastDataParameter<A> {
 
     private static final byte BYTE_MODIFIER = 5;

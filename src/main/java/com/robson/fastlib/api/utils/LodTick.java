@@ -1,4 +1,4 @@
-package com.robson.fastlib.utils;
+package com.robson.fastlib.api.utils;
 
 import com.robson.fastlib.api.data.structures.FastDataParameter;
 import com.robson.fastlib.api.data.structures.FastTemporaryList;

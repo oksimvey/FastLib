@@ -1,4 +1,4 @@
-package com.robson.fastlib.api;
+package com.robson.fastlib.api.data.manager;
 
 import net.minecraft.client.Minecraft;
 

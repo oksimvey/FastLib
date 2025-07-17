@@ -1,8 +1,8 @@
 package com.robson.fastlib.api.data.structures;
 
 
-import com.robson.fastlib.api.DataFileManager;
-import com.robson.fastlib.utils.math.FastVec3f;
+import com.robson.fastlib.api.data.manager.DataFileManager;
+import com.robson.fastlib.api.utils.math.FastVec3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;

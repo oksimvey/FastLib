@@ -1,4 +1,4 @@
-package com.robson.fastlib.api;
+package com.robson.fastlib.api.customtick;
 
 public abstract class PlayerCustomTickEvent {
 

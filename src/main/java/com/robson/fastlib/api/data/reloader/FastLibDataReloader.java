@@ -33,16 +33,11 @@ public class FastLibDataReloader extends SimpleJsonResourceReloadListener {
         List<String> directories = getStrings(objectIn);
         List<String> registries = new ArrayList<>();
         for (String dir : directories) {
-            System.out.println("Diretório: " + dir);
-
             for (Map.Entry<ResourceLocation, JsonElement> entry : objectIn.entrySet()) {
                 ResourceLocation rl = entry.getKey();
                 String path = rl.getPath();
-
                 if (path.startsWith(dir + "/")) {
-                    System.out.println("  Arquivo: " + path);
                     JsonElement json = entry.getValue();
-
                     String registry = JsonCompressor.compress(dir, rl.getNamespace(), path, json);
                     if (!registry.isEmpty()) {
                         registries.add(registry);

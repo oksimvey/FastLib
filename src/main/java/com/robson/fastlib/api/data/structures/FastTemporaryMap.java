@@ -1,6 +1,6 @@
 package com.robson.fastlib.api.data.structures;
 
-import com.robson.fastlib.utils.math.FastLibMathUtils;
+import com.robson.fastlib.api.utils.math.FastLibMathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
