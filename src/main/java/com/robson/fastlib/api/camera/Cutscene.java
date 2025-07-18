@@ -30,10 +30,9 @@ public class Cutscene {
             rotations.add(keyframe.getRotation());
         }
         var interpolated = BezierCurve.getBezierInterpolatedPoints(positions, 5);
-        var interpolatedrot = CreateSmoothRotation.createSmoothRotation(rotations, interpolated.size());
         int interval = DURATION / interpolated.size();
         LoopUtils.loopByTimes( i -> {
-            this.currentKeyframe = CamUtils.createParameter(interpolated.get(i), interpolatedrot.get(i));
+
         }, interpolated.size(), interval);
     }
 

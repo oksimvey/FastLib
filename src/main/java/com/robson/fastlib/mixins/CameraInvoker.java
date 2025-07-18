@@ -62,7 +62,7 @@ public abstract class CameraInvoker {
         if (player == null) return;
         PlayerData data = PlayerDataManager.get(player);
         if (data == null) return;
-        FastVec2f angles = data.getCamera().computeAngles();
+        FastVec2f angles = data.getCamera().computeAngles(p_90580_);
         setRotation(angles.x(), angles.y());
         if (p_90578_) {
             if (p_90579_) {
@@ -76,7 +76,7 @@ public abstract class CameraInvoker {
             this.move(0.0D, 0.3D, 0.0D);
         }
         FastVec3f offset = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON ? new FastVec3f(0, 0, 0) :
-                new FastVec3f(-0.25f, 0.5f, -4).rotate(this.yRot);
+                data.getCamera().getCurrentOffset().rotate(this.yRot);
         this.setPosition(new Vec3(Mth.lerp((double)p_90580_, p_90577_.xo, p_90577_.getX()), Mth.lerp((double)p_90580_, p_90577_.yo, p_90577_.getY()) + Mth.lerp(p_90580_, this.eyeHeightOld, this.eyeHeight) + Math.sin(FastLibMathUtils.degreeToRadians(this.xRot)), Mth.lerp((double)p_90580_, p_90577_.zo, p_90577_.getZ())).add(offset.toVec3()));
 
     }

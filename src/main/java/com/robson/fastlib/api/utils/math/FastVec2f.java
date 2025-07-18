@@ -1,6 +1,7 @@
 package com.robson.fastlib.api.utils.math;
 
 public record FastVec2f(float x, float y) {
+    public static final FastVec2f ZERO = new FastVec2f(0, 0);
 
     public FastVec2f add(FastVec2f vec2f){
         return new FastVec2f(x + vec2f.x, y + vec2f.y);
