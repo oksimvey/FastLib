@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 public class RenderGUI {
 
     private static final ResourceLocation targettexture = new ResourceLocation("fastlib", "textures/gui/target.png");
-    private static FastVec3f lastRenderPoint = null; // Armazena a posição do frame anterior
+    private static FastVec3f lastRenderPoint = null;
     @SubscribeEvent
     public static void onRenderGUIEvent(RenderGuiOverlayEvent event) {
         PlayerData data = PlayerDataManager.get(Minecraft.getInstance().player);
@@ -37,14 +37,12 @@ public class RenderGUI {
         float smoothedX = Mth.lerp(lerpFactor, lastRenderPoint.x(), targetRenderPoint.x());
         float smoothedY = Mth.lerp(lerpFactor, lastRenderPoint.y(), targetRenderPoint.y());
 
-        // Atualiza a última posição para o próximo frame
         lastRenderPoint = new FastVec3f(smoothedX, smoothedY, 0);
 
-        // Renderiza o ícone na posição suavizada
         int iconSize = 10;
         event.getGuiGraphics().blit(
                 targettexture,
-                (int) smoothedX - (iconSize / 2), // Centraliza o ícone
+                (int) smoothedX - (iconSize / 2),
                 (int) smoothedY - (iconSize / 2),
                 0, 0, iconSize, iconSize, iconSize, iconSize
         );  }

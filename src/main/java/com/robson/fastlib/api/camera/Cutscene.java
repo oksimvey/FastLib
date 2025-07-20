@@ -1,6 +1,5 @@
 package com.robson.fastlib.api.camera;
 
-import com.robson.fastlib.api.utils.CamUtils;
 import com.robson.fastlib.api.utils.LoopUtils;
 import com.robson.fastlib.api.utils.math.BezierCurve;
 import com.robson.fastlib.api.utils.math.FastVec2f;
@@ -11,32 +10,37 @@ import java.util.List;
 
 public class Cutscene {
 
+    public record CameraKeyFrame(FastVec3f position, FastVec2f rotation){}
+
     private final int DURATION;
 
-    private final List<CamUtils.CameraParameter> KEYFRAMES;
+    private final List<CameraKeyFrame> KEYFRAMES;
 
-    private CamUtils.CameraParameter currentKeyframe;
+    private CameraKeyFrame currentKeyframe;
 
-    public Cutscene(int duration, CamUtils.CameraParameter... keyframes) {
+    public Cutscene(int duration, CameraKeyFrame... keyframes) {
         DURATION = duration;
         KEYFRAMES = List.of(keyframes);
+        start();
     }
 
     public void start(){
-        var positions = new ArrayList<FastVec3f>();
-        var rotations = new ArrayList<FastVec2f>();
-        for (var keyframe : KEYFRAMES) {
-            positions.add(keyframe.getPosition());
-            rotations.add(keyframe.getRotation());
+        var interpolated = new ArrayList<CameraKeyFrame>();
+        var pos = new ArrayList<FastVec3f>();
+        for (CameraKeyFrame frame : KEYFRAMES){
+            pos.add(frame.position);
         }
-        var interpolated = BezierCurve.getBezierInterpolatedPoints(positions, 5);
+        var newpos = BezierCurve.getBezierInterpolatedPoints(pos, 5);
+        for (FastVec3f vec3f: newpos){
+            interpolated.add(new CameraKeyFrame(vec3f, FastVec2f.ZERO));
+        }
         int interval = DURATION / interpolated.size();
         LoopUtils.loopByTimes( i -> {
-
+            currentKeyframe = interpolated.get(i);
         }, interpolated.size(), interval);
     }
 
-    public CamUtils.CameraParameter getCurrentKeyframe() {
-        return currentKeyframe != null ? currentKeyframe : null;
+    public CameraKeyFrame getCurrentKeyframe() {
+        return currentKeyframe;
     }
 }

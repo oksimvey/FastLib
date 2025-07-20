@@ -40,6 +40,10 @@ public record FastVec3f(float x, float y, float z) {
        return new FastVec3f(x / scale, y / scale, z / scale);
    }
 
+   public float distanceTo(FastVec3f vec3f){
+       return vec3f.sub(this).length();
+   }
+
    public float dot(FastVec3f vec3f){
        return (x * vec3f.x) + (y * vec3f.y) + (z * vec3f.z);
    }

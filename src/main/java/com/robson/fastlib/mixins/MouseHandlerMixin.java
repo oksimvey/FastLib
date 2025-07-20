@@ -1,6 +1,7 @@
 package com.robson.fastlib.mixins;
 
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraftforge.api.distmarker.Dist;
@@ -32,6 +33,8 @@ public abstract class MouseHandlerMixin {
 
     @Inject(method = "turnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V"), cancellable = true)
     private void onTurn(CallbackInfo ci) {
-        ci.cancel();
+        if (Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON) {
+            ci.cancel();
+        }
     }
 }

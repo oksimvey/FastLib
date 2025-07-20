@@ -45,7 +45,6 @@ public class FastLibDataReloader extends SimpleJsonResourceReloadListener {
                 }
             }
         }
-
     }
 
     private static @NotNull List<String> getStrings(Map<ResourceLocation, JsonElement> objectIn) {

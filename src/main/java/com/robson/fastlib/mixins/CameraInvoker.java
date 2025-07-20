@@ -3,7 +3,6 @@ package com.robson.fastlib.mixins;
 
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
 import com.robson.fastlib.api.data.types.PlayerData;
-import com.robson.fastlib.api.utils.CamUtils;
 import com.robson.fastlib.api.utils.math.FastLibMathUtils;
 import com.robson.fastlib.api.utils.math.FastVec2f;
 import com.robson.fastlib.api.utils.math.FastVec3f;
@@ -17,7 +16,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -64,6 +62,18 @@ public abstract class CameraInvoker {
         if (data == null) return;
         FastVec2f angles = data.getCamera().computeAngles(p_90580_);
         setRotation(angles.x(), angles.y());
+        FastVec3f offset = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON ? new FastVec3f(0, 0, 0) :
+                data.getCamera().getCurrentOffset().rotate(this.yRot);
+        float pitchRadians = FastLibMathUtils.degreeToRadians(this.xRot);
+        float verticalOffset = (float) Math.sin(pitchRadians);
+
+        this.setPosition(new Vec3(
+                Mth.lerp(p_90580_, p_90577_.xo, p_90577_.getX()),
+                Mth.lerp(p_90580_, p_90577_.yo, p_90577_.getY()) +
+                        Mth.lerp(p_90580_, this.eyeHeightOld, this.eyeHeight) +
+                        verticalOffset,
+                Mth.lerp(p_90580_, p_90577_.zo, p_90577_.getZ())
+        ).add(offset.toVec3()));
         if (p_90578_) {
             if (p_90579_) {
                 this.setRotation(this.yRot + 180.0F, -this.xRot);
@@ -75,10 +85,6 @@ public abstract class CameraInvoker {
             this.setRotation(direction != null ? direction.toYRot() - 180.0F : 0.0F, 0.0F);
             this.move(0.0D, 0.3D, 0.0D);
         }
-        FastVec3f offset = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON ? new FastVec3f(0, 0, 0) :
-                data.getCamera().getCurrentOffset().rotate(this.yRot);
-        this.setPosition(new Vec3(Mth.lerp((double)p_90580_, p_90577_.xo, p_90577_.getX()), Mth.lerp((double)p_90580_, p_90577_.yo, p_90577_.getY()) + Mth.lerp(p_90580_, this.eyeHeightOld, this.eyeHeight) + Math.sin(FastLibMathUtils.degreeToRadians(this.xRot)), Mth.lerp((double)p_90580_, p_90577_.zo, p_90577_.getZ())).add(offset.toVec3()));
-
     }
 
 }

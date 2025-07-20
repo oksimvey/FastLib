@@ -1,45 +1,56 @@
 package com.robson.fastlib.api.utils.math;
 
-import com.robson.fastlib.api.data.manager.PlayerDataManager;
-import com.robson.fastlib.api.data.types.PlayerData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 
-public interface FastLibMathUtils {
+public class FastLibMathUtils {
 
-    float EULER = 2.718281f;
+    public static final float EULER = 2.718281f;
 
-    float PI = 3.141592f;
+    public static final float PI = 3.141592f;
 
-    static float degreeToRadians(float degree) {
-        return PI * (degree / 180f);
+    private static final float DEGREE_TO_RADIANS = PI / 180f;
+
+    private static final float RADIANS_TO_DEGREE = 180f / PI;
+
+    public static float degreeToRadians(float degree) {
+        return DEGREE_TO_RADIANS * degree;
     }
 
-    static float radiansToDegree(float radians) {
-        return 180f * (radians / PI);
+    public static float radiansToDegree(float radians) {
+        return RADIANS_TO_DEGREE * radians;
     }
 
-    static FastVec3f rotate3DVector(FastVec3f vec, float degrees) {
+    public static FastVec3f rotate3DVector(FastVec3f vec, float degrees) {
         float theta = degreeToRadians(degrees);
         float x = (float) ((vec.x() * Math.cos(theta)) - (vec.z() * Math.sin(theta)));
         float z = (float) ((vec.x() * Math.sin(theta)) + (vec.z() * Math.cos(theta)));
         return new FastVec3f(x, vec.y(), z);
     }
 
-    static FastVec2f rotate2DVector(FastVec2f vec, float degrees) {
+    public static FastVec2f rotate2DVector(FastVec2f vec, float degrees) {
         float theta = degreeToRadians(degrees);
         float x = (float) ((vec.x() * Math.cos(theta)) - (vec.y() * Math.sin(theta)));
         float y = (float) ((vec.x() * Math.sin(theta)) + (vec.y() * Math.cos(theta)));
         return new FastVec2f(x, y);
     }
 
+    public static AABB createAABBAroundPos(FastVec3f pos, float size) {
+        return new AABB(pos.x() + size, pos.y() + size * 1.5, pos.z() + size, pos.x() - size, pos.y() - size, pos.z() - size);
+    }
+
+
+    public static AABB createAABBAroundEnt(Entity ent, float size) {
+        return new AABB(ent.getX() + size, ent.getY() + size * 1.5, ent.getZ() + size, ent.getX() - size, ent.getY() - size, ent.getZ() - size);
+    }
+
 
     /// x is the screen x position
     /// y is the screen y position
     /// z is the scale, affected by distance
-    static FastVec3f transformWorldToScreen(FastVec3f worldpos){
+    public static FastVec3f transformWorldToScreen(FastVec3f worldpos){
         var mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return new FastVec3f(0, 0, 0);
 

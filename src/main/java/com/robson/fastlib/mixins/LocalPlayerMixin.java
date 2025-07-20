@@ -1,8 +1,8 @@
 package com.robson.fastlib.mixins;
 
-import com.robson.fastlib.api.camera.CustomCam;
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
-import com.robson.fastlib.api.data.types.PlayerData;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,7 +20,9 @@ public class LocalPlayerMixin {
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/tutorial/Tutorial;onInput(Lnet/minecraft/client/player/Input;)V"))
     private void onMovementInputUpdate(CallbackInfo ci) {
         var data = PlayerDataManager.get((LocalPlayer)(Object)this);
-        if (data == null) return;
-        data.getCamera().handlePlayerMovement(input);
+        if (data != null && Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON){
+            data.getCamera().handlePlayerMovement(input);
+        }
+
     }
 }
