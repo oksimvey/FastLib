@@ -4,6 +4,7 @@ import com.robson.fastlib.api.data.manager.PlayerDataManager;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Final;
@@ -27,14 +28,15 @@ public abstract class MouseHandlerMixin {
     @Inject(method = "turnPlayer", at = @At(value = "HEAD"))
     private void onTurnStart(CallbackInfo ci) {
         var data = PlayerDataManager.get(this.minecraft.player);
-        if (data == null) return;
-        data.getCamera().handleMouseMovement(this.minecraft.player, this.accumulatedDX, this.accumulatedDY);
+        if ((accumulatedDX != 0 || accumulatedDY != 0) && data != null) {
+            data.getKeyHandler().handleMouseInput((float) accumulatedDX, (float) accumulatedDY);
+        }
     }
 
     @Inject(method = "turnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V"), cancellable = true)
     private void onTurn(CallbackInfo ci) {
         if (Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON) {
-            ci.cancel();
+
         }
     }
 }

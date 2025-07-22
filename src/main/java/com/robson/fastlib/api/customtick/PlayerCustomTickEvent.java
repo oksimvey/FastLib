@@ -10,5 +10,11 @@ public abstract class PlayerCustomTickEvent {
         this.flag = flag;
     }
 
+    public byte getFlag() {
+        return flag;
+    }
+
+    public abstract boolean canTick(Player player);
+
     public abstract void onTick(Player player);
 }

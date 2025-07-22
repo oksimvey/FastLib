@@ -5,23 +5,23 @@ import com.robson.fastlib.api.registries.RegisteredKeybinding;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.player.Input;
 import net.minecraft.world.entity.player.Player;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyHandler {
 
-    private final IInput mouseInput;
+    private final MouseInputHandler mouseInput;
 
-    private final IInput keyboardInput;
+    private final KeyInputHandler keyboardInput;
 
     public KeyHandler(){
-        mouseInput = new IInput();
-        keyboardInput = new IInput();
+        mouseInput = new MouseInputHandler();
+        keyboardInput = new KeyInputHandler();
     }
 
     public void tick(Player player) {
         if (player != null && Minecraft.getInstance().screen == null) {
-            handleKeyboardInput();
            for (KeyBinding keyBinding : RegisteredKeybinding.getRegisteredKeys()){
                if (keyBinding.shouldHandle(player)){
                    handleKeyInput(player, keyBinding.getKeyMapping(), keyBinding.getKey());
@@ -30,16 +30,23 @@ public class KeyHandler {
         }
     }
 
-    void handleKeyboardInput(){
-        Options options = Minecraft.getInstance().options;
-        keyboardInput.setUp(isKeyDown(options.keyUp));
-        keyboardInput.setDown(isKeyDown(options.keyDown));
-        keyboardInput.setLeft(isKeyDown(options.keyLeft));
-        keyboardInput.setRight(isKeyDown(options.keyRight));
+   public void handleKeyboardInput(Input input){
+        keyboardInput.setUp(input.up);
+        keyboardInput.setDown(input.down);
+        keyboardInput.setLeft(input.left);
+        keyboardInput.setRight(input.right);
     }
 
-    void handleMouseInput(){
+    public void handleMouseInput(float dx, float dy) {
+        mouseInput.handleMouseInput(dx, dy);
+    }
 
+    public MouseInputHandler getMouseInput(){
+        return mouseInput;
+    }
+
+    public KeyInputHandler getKeyboardInput(){
+        return keyboardInput;
     }
 
 
@@ -56,19 +63,14 @@ public class KeyHandler {
     public static boolean isKeyDown(KeyMapping key) {
         if (key.getKey().getType() == InputConstants.Type.KEYSYM) {
             return key.isDown() || GLFW.glfwGetKey(Minecraft.getInstance().getWindow().getWindow(), key.getKey().getValue()) > 0;
-        } else if (key.getKey().getType() != InputConstants.Type.MOUSE) {
+        }
+        else if (key.getKey().getType() != InputConstants.Type.MOUSE) {
             return false;
-        } else {
+        }
+        else {
             return key.isDown() || GLFW.glfwGetMouseButton(Minecraft.getInstance().getWindow().getWindow(), key.getKey().getValue()) > 0;
         }
     }
 
-    public IInput getMouseInput(){
-        return mouseInput;
-    }
-
-    public IInput getKeyboardInput(){
-        return keyboardInput;
-    }
 
 }

@@ -19,7 +19,7 @@ public class LodTick {
 
     public static boolean canTick(Entity entity, float multiplier){
         if (entity == null || FLAGGED_ENTITIES.contains(entity) || Minecraft.getInstance().player == null) return false;
-        short distance = (short) (computeDistance(entity.position()) * multiplier);
+        short distance = (short) ((short) 1 + (computeDistance(entity.position()) * multiplier));
         int tickNow = Minecraft.getInstance().player.tickCount;
         if (FLAGGED_NEXT_TICK.contains(entity)) {
             int nextTick = FLAGGED_NEXT_TICK.get(entity);
@@ -39,7 +39,7 @@ public class LodTick {
 
     public static boolean canTick(Vec3 vec3, float multiplier){
         if (vec3 == null || FLAGGED_VECTORS.contains(vec3) || Minecraft.getInstance().player == null) return false;
-        short distance = (short) (computeDistance(vec3) * multiplier);
+        short distance = (short) ((short) 1 + (computeDistance(vec3) * multiplier));
         int tickNow = Minecraft.getInstance().player.tickCount;
         if (FLAGGED_VECTORS_NEXT_TICK.contains(vec3)) {
             int nextTick = FLAGGED_VECTORS_NEXT_TICK.get(vec3);
@@ -56,10 +56,10 @@ public class LodTick {
     }
 
     static short computeDistance(Vec3 vec3){
-        if (vec3 == null || Minecraft.getInstance().gameRenderer.getMainCamera() == null){
+        if (vec3 == null){
             return 1;
         }
-        return (short) (1 + (Math.pow(1.075, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceTo(vec3))));
+        return (short) (Math.pow(1.075, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceTo(vec3)));
     }
 
 }

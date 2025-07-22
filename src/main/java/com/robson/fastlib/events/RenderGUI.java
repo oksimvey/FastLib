@@ -21,7 +21,7 @@ public class RenderGUI {
         PlayerData data = PlayerDataManager.get(Minecraft.getInstance().player);
         if (data == null || data.getCamera() == null) return;
 
-        FastVec3f focusPoint = data.getCamera().getFocusPoint();
+        FastVec3f focusPoint = new FastVec3f(0 ,0 ,0);
         if (focusPoint == null) {
             lastRenderPoint = null;
             return;
@@ -39,7 +39,7 @@ public class RenderGUI {
 
         lastRenderPoint = new FastVec3f(smoothedX, smoothedY, 0);
 
-        int iconSize = 10;
+        int iconSize = (int) (targetRenderPoint.z() * 250);
         event.getGuiGraphics().blit(
                 targettexture,
                 (int) smoothedX - (iconSize / 2),

@@ -18,8 +18,12 @@ public class PlayerCustomTickManager {
       EVENTS.add(event);
     }
 
-    public static void handle(Player player){
-        EVENTS.forEach(event -> event.onTick(player));
+    public static void handle(Player player) {
+        EVENTS.forEach(event -> {
+            if (player.tickCount % event.getFlag() == 0 && event.canTick(player)) {
+                event.onTick(player);
+            }
+        });
     }
 
     public static void startTick(Player player) {
@@ -37,6 +41,7 @@ public class PlayerCustomTickManager {
             loopTick(player);
             if (!Minecraft.getInstance().isPaused()) {
                 PlayerDataManager.get(player).tick(player);
+                handle(player);
             }
         }
     }

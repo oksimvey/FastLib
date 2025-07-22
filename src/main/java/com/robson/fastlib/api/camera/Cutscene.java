@@ -18,28 +18,22 @@ public class Cutscene {
 
     private CameraKeyFrame currentKeyframe;
 
+    private boolean started;
+
     public Cutscene(int duration, CameraKeyFrame... keyframes) {
         DURATION = duration;
         KEYFRAMES = List.of(keyframes);
-        start();
+        started = false;
     }
 
-    public void start(){
+    public void start() {
+        started = true;
         var interpolated = new ArrayList<CameraKeyFrame>();
         var pos = new ArrayList<FastVec3f>();
-        for (CameraKeyFrame frame : KEYFRAMES){
+        for (CameraKeyFrame frame : KEYFRAMES) {
             pos.add(frame.position);
         }
-        var newpos = BezierCurve.getBezierInterpolatedPoints(pos, 5);
-        for (FastVec3f vec3f: newpos){
-            interpolated.add(new CameraKeyFrame(vec3f, FastVec2f.ZERO));
-        }
-        int interval = DURATION / interpolated.size();
-        LoopUtils.loopByTimes( i -> {
-            currentKeyframe = interpolated.get(i);
-        }, interpolated.size(), interval);
     }
-
     public CameraKeyFrame getCurrentKeyframe() {
         return currentKeyframe;
     }

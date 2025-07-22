@@ -37,6 +37,11 @@ public class FastLibMathUtils {
         return new FastVec2f(x, y);
     }
 
+    public static float correctDegrees(float degrees){
+        if (degrees > 360) degrees %= 360f;
+        return degrees;
+    }
+
     public static AABB createAABBAroundPos(FastVec3f pos, float size) {
         return new AABB(pos.x() + size, pos.y() + size * 1.5, pos.z() + size, pos.x() - size, pos.y() - size, pos.z() - size);
     }

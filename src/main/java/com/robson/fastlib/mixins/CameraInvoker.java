@@ -1,6 +1,7 @@
 package com.robson.fastlib.mixins;
 
 
+import com.robson.fastlib.api.camera.CustomCam;
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
 import com.robson.fastlib.api.data.types.PlayerData;
 import com.robson.fastlib.api.utils.math.FastLibMathUtils;
@@ -50,40 +51,41 @@ public abstract class CameraInvoker {
     @Shadow private float eyeHeight;
 
     @Inject(method = "setup", at = @At(value = "HEAD"), cancellable = true)
-    public void setup(BlockGetter p_90576_, Entity p_90577_, boolean p_90578_, boolean p_90579_, float p_90580_, CallbackInfo ci){
-        ci.cancel();
-        this.initialized = true;
-        this.level = p_90576_;
-        this.entity = p_90577_;
-        this.detached = p_90578_;
+    public void setup(BlockGetter p_90576_, Entity p_90577_, boolean p_90578_, boolean p_90579_, float p_90580_, CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return;
-        PlayerData data = PlayerDataManager.get(player);
-        if (data == null) return;
-        FastVec2f angles = data.getCamera().computeAngles(p_90580_);
-        setRotation(angles.x(), angles.y());
-        FastVec3f offset = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON ? new FastVec3f(0, 0, 0) :
-                data.getCamera().getCurrentOffset().rotate(this.yRot);
-        float pitchRadians = FastLibMathUtils.degreeToRadians(this.xRot);
-        float verticalOffset = (float) Math.sin(pitchRadians);
-
-        this.setPosition(new Vec3(
-                Mth.lerp(p_90580_, p_90577_.xo, p_90577_.getX()),
-                Mth.lerp(p_90580_, p_90577_.yo, p_90577_.getY()) +
-                        Mth.lerp(p_90580_, this.eyeHeightOld, this.eyeHeight) +
-                        verticalOffset,
-                Mth.lerp(p_90580_, p_90577_.zo, p_90577_.getZ())
-        ).add(offset.toVec3()));
-        if (p_90578_) {
-            if (p_90579_) {
-                this.setRotation(this.yRot + 180.0F, -this.xRot);
+        if (player != null && PlayerDataManager.get(player) != null) {
+            CustomCam cam = PlayerDataManager.get(player).getCamera();
+            if (cam != null) {
+                ci.cancel();
+                cam.update(p_90580_);
+                this.initialized = true;
+                this.level = p_90576_;
+                this.entity = p_90577_;
+                this.detached = p_90578_;
+                FastVec2f angles = cam.getRotation();
+                setRotation(angles.x(), angles.y());
+                FastVec3f offset = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON ? new FastVec3f(0, 0, 0) :
+                        cam.getOffset().rotate(this.yRot);
+                float pitchRadians = FastLibMathUtils.degreeToRadians(this.xRot);
+                float verticalOffset = (float) Math.sin(pitchRadians);
+                this.setPosition(new Vec3(
+                        Mth.lerp(p_90580_, p_90577_.xo, p_90577_.getX()),
+                        Mth.lerp(p_90580_, p_90577_.yo, p_90577_.getY()) +
+                                Mth.lerp(p_90580_, this.eyeHeightOld, this.eyeHeight) +
+                                verticalOffset,
+                        Mth.lerp(p_90580_, p_90577_.zo, p_90577_.getZ())
+                ).add(offset.toVec3()));
+                if (p_90578_) {
+                    if (p_90579_) {
+                        this.setRotation(this.yRot + 180.0F, -this.xRot);
+                    }
+                    this.move(-this.getMaxZoom(4.0D), 0.0D, 0.0D);
+                } else if (p_90577_ instanceof LivingEntity && ((LivingEntity) p_90577_).isSleeping()) {
+                    Direction direction = ((LivingEntity) p_90577_).getBedOrientation();
+                    this.setRotation(direction != null ? direction.toYRot() - 180.0F : 0.0F, 0.0F);
+                    this.move(0.0D, 0.3D, 0.0D);
+                }
             }
-            this.move(-this.getMaxZoom(4.0D), 0.0D, 0.0D);
-        }
-        else if (p_90577_ instanceof LivingEntity && ((LivingEntity)p_90577_).isSleeping()) {
-            Direction direction = ((LivingEntity)p_90577_).getBedOrientation();
-            this.setRotation(direction != null ? direction.toYRot() - 180.0F : 0.0F, 0.0F);
-            this.move(0.0D, 0.3D, 0.0D);
         }
     }
 

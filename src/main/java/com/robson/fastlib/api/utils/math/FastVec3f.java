@@ -11,6 +11,10 @@ public record FastVec3f(float x, float y, float z) {
        return new FastVec3f((float) vec3.x, (float) vec3.y, (float) vec3.z);
    }
 
+   public FastVec3f copy(){
+       return new FastVec3f(x, y, z);
+   }
+
    public Vec3 toVec3(){
        return new Vec3(x, y, z);
    }

@@ -19,9 +19,10 @@ public class LocalPlayerMixin {
 
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/tutorial/Tutorial;onInput(Lnet/minecraft/client/player/Input;)V"))
     private void onMovementInputUpdate(CallbackInfo ci) {
+        if (input.getMoveVector().lengthSquared() == 0)return;
         var data = PlayerDataManager.get((LocalPlayer)(Object)this);
-        if (data != null && Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON){
-            data.getCamera().handlePlayerMovement(input);
+        if (data != null){
+            data.getKeyHandler().handleKeyboardInput(input);
         }
 
     }
