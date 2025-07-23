@@ -45,7 +45,7 @@ public class LodTick {
             int nextTick = FLAGGED_VECTORS_NEXT_TICK.get(vec3);
             if (tickNow < nextTick) return false;
         }
-        int remainder = tickNow % distance;
+        int remainder = tickNow % distance + 1;
         if (remainder != 0) {
             int nextTick = tickNow + (distance - remainder);
             FLAGGED_VECTORS_NEXT_TICK.put(vec3, nextTick);
@@ -59,7 +59,7 @@ public class LodTick {
         if (vec3 == null){
             return 1;
         }
-        return (short) (Math.pow(1.075, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceTo(vec3)));
+        return (short) ((short)(Math.pow(1.075, Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceTo(vec3))));
     }
 
 }

@@ -103,7 +103,7 @@ public class FastSavedMap<A, B> extends FastTemporaryMap<A, B> {
 
     public void remove(A key) {
         if (contains(key)) {
-            DATA.remove(key);
+            DATA.asMap().remove(key);
             return;
         }
         try {
