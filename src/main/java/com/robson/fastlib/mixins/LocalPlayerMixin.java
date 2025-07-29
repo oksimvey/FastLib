@@ -23,7 +23,7 @@ public class LocalPlayerMixin {
         var data = PlayerDataManager.get((LocalPlayer)(Object)this);
         if (data != null){
             data.getKeyHandler().handleKeyboardInput(input);
+            data.getCamera().handlePlayerMovement(input);
         }
-
     }
 }

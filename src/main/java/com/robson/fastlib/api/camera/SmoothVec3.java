@@ -13,6 +13,10 @@ public class SmoothVec3 implements CameraSmoother<FastVec3f> {
         this.factor = factor;
     }
 
+    public void setCurrent(FastVec3f current) {
+        this.current = current;
+    }
+
     @Override
     public void setTarget(FastVec3f target) {
         this.target = target.copy();

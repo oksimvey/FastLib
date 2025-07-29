@@ -11,7 +11,13 @@ public class SmoothFloat implements CameraSmoother<Float> {
             this.factor = factor;
         }
 
-        @Override
+    @Override
+    public void setCurrent(Float current) {
+        this.current = current;
+        this.target = current;
+    }
+
+    @Override
         public void setTarget(Float target) {
             this.target = target;
         }

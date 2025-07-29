@@ -30,13 +30,14 @@ public abstract class MouseHandlerMixin {
         var data = PlayerDataManager.get(this.minecraft.player);
         if ((accumulatedDX != 0 || accumulatedDY != 0) && data != null) {
             data.getKeyHandler().handleMouseInput((float) accumulatedDX, (float) accumulatedDY);
+            data.getCamera().handleRotation((float) accumulatedDX, (float) accumulatedDY);
         }
     }
 
     @Inject(method = "turnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V"), cancellable = true)
     private void onTurn(CallbackInfo ci) {
         if (Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON) {
-
+            ci.cancel();
         }
     }
 }

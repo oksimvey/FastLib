@@ -1,6 +1,6 @@
 package com.robson.fastlib.api.keybinding;
 
-public class KeyInputHandler {
+public class InputHandler {
 
     private boolean up;
 
@@ -10,7 +10,7 @@ public class KeyInputHandler {
 
     private boolean right;
 
-    public KeyInputHandler() {
+    public InputHandler() {
         this.up = false;
         this.down = false;
         this.left = false;

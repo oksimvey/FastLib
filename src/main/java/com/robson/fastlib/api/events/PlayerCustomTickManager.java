@@ -1,42 +1,33 @@
-package com.robson.fastlib.api.customtick;
+package com.robson.fastlib.api.events;
 
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
+import com.robson.fastlib.api.events.manager.FastLibEventManager;
+import com.robson.fastlib.api.events.types.FastLibEvent;
 import com.robson.fastlib.api.utils.Scheduler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class PlayerCustomTickManager {
+public interface PlayerCustomTickManager{
 
-    private static List<PlayerCustomTickEvent> EVENTS = new ArrayList<>();
+    FastLibEventManager<Player, FastLibEvent<Player>> EVENT_MANAGER = new FastLibEventManager<>();
 
-    public static void registerEvent(PlayerCustomTickEvent event){
-      EVENTS.add(event);
+    static void handle(Player player) {
+        EVENT_MANAGER.shotEvents(player);
     }
 
-    public static void handle(Player player) {
-        EVENTS.forEach(event -> {
-            if (player.tickCount % event.getFlag() == 0 && event.canTick(player)) {
-                event.onTick(player);
-            }
-        });
-    }
-
-    public static void startTick(Player player) {
+    static void startTick(Player player) {
         stopTick(player);
         PlayerDataManager.init(player);
         loopTick(player);
     }
 
-    public static void stopTick(Player player) {
+    static void stopTick(Player player) {
         PlayerDataManager.remove(player);
     }
 
-    public static void onTick(Player player) {
+    static void onTick(Player player) {
         if (PlayerDataManager.get(player) != null) {
             loopTick(player);
             if (!Minecraft.getInstance().isPaused()) {
@@ -46,12 +37,12 @@ public class PlayerCustomTickManager {
         }
     }
 
-    public static void startRespawnTick(Player player) {
+    static void startRespawnTick(Player player) {
         stopTick(player);
         Scheduler.schedule(() -> startTick(player), 52, TimeUnit.MILLISECONDS);
     }
 
-    public static void loopTick(Player player) {
+    static void loopTick(Player player) {
         Scheduler.schedule(() -> onTick(player), 50, TimeUnit.MILLISECONDS);
     }
 }

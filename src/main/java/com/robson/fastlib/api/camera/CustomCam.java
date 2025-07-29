@@ -5,7 +5,11 @@ import com.robson.fastlib.api.utils.math.BezierCurve;
 import com.robson.fastlib.api.utils.math.FastVec2f;
 import com.robson.fastlib.api.utils.math.FastVec3f;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.Input;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.phys.Vec2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +17,8 @@ import java.util.List;
 public class CustomCam {
 
     private static final float smoothFactor = 0.05f;
+
+    private static boolean decoupled = true;
 
     private final SmoothFloat smoothYaw;
     private final SmoothFloat smoothPitch;
@@ -33,6 +39,12 @@ public class CustomCam {
 
     public boolean isEnabled() {
         return smoothPosition != null;
+    }
+
+    public void handleRotation(float yaw, float pitch) {
+        smoothYaw.setCurrent(smoothYaw.getCurrent() + yaw * 0.13f);
+        smoothPitch.setCurrent(smoothPitch.getCurrent() + pitch * 0.13f);
+        if (Minecraft.getInstance().player != null) Minecraft.getInstance().player.setXRot(smoothPitch.getCurrent());
     }
 
     /**
@@ -97,5 +109,31 @@ public class CustomCam {
         smoothPitch.update(deltaTime);
         smoothPosition.update(deltaTime);
 
+    }
+
+    public void handlePlayerMovement(Input input) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        if (decoupled) {
+            Vec2 movement = input.getMoveVector();
+            if (movement.lengthSquared() > 0) {
+                float targetDeg = (float) Mth.atan2(movement.x, movement.y) * -Mth.RAD_TO_DEG;
+                targetDeg *= 0.25f;
+                player.setYRot(targetDeg + player.getYRot());
+                input.up = false;
+                input.down = false;
+                input.right = false;
+                input.left = false;
+                input.forwardImpulse = 1;
+                input.leftImpulse = 0;
+            }
+            else {
+
+            }
+        }
+        else {
+
+        }
     }
 }

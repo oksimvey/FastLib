@@ -1,9 +1,11 @@
 package com.robson.fastlib.api.utils.math;
 
-import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import yesman.epicfight.api.utils.math.OpenMatrix4f;
 
 public class FastLibMathUtils {
 
@@ -49,6 +51,17 @@ public class FastLibMathUtils {
 
     public static AABB createAABBAroundEnt(Entity ent, float size) {
         return new AABB(ent.getX() + size, ent.getY() + size * 1.5, ent.getZ() + size, ent.getX() - size, ent.getY() - size, ent.getZ() - size);
+    }
+
+    public static PoseStack correctPoseStack(PoseStack stack, OpenMatrix4f matrix4f){
+        PoseStack newstack = new PoseStack();
+        newstack.pushPose();
+        newstack.last().pose().set(stack.last().pose());
+        newstack.last().pose().mul(matrix4f.m00, matrix4f.m01, matrix4f.m02, matrix4f.m03,
+                matrix4f.m10, matrix4f.m11, matrix4f.m12, matrix4f.m13,
+                matrix4f.m20, matrix4f.m21, matrix4f.m22, matrix4f.m23,
+                matrix4f.m30, matrix4f.m31, matrix4f.m32, matrix4f.m33);
+        return newstack;
     }
 
 }

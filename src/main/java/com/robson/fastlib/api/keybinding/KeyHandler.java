@@ -4,20 +4,19 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.robson.fastlib.api.registries.RegisteredKeybinding;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
 import net.minecraft.client.player.Input;
 import net.minecraft.world.entity.player.Player;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyHandler {
 
-    private final MouseInputHandler mouseInput;
+    private final InputHandler mouseInput;
 
-    private final KeyInputHandler keyboardInput;
+    private final InputHandler keyboardInput;
 
     public KeyHandler(){
-        mouseInput = new MouseInputHandler();
-        keyboardInput = new KeyInputHandler();
+        mouseInput = new InputHandler();
+        keyboardInput = new InputHandler();
     }
 
     public void tick(Player player) {
@@ -38,14 +37,17 @@ public class KeyHandler {
     }
 
     public void handleMouseInput(float dx, float dy) {
-        mouseInput.handleMouseInput(dx, dy);
+        mouseInput.setUp(dx < 0);
+        mouseInput.setDown(dx > 0);
+        mouseInput.setLeft(dy < 0);
+        mouseInput.setRight(dy > 0);
     }
 
-    public MouseInputHandler getMouseInput(){
+    public InputHandler getMouseInput(){
         return mouseInput;
     }
 
-    public KeyInputHandler getKeyboardInput(){
+    public InputHandler getKeyboardInput(){
         return keyboardInput;
     }
 
@@ -71,6 +73,4 @@ public class KeyHandler {
             return key.isDown() || GLFW.glfwGetMouseButton(Minecraft.getInstance().getWindow().getWindow(), key.getKey().getValue()) > 0;
         }
     }
-
-
 }
