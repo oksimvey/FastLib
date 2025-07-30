@@ -87,8 +87,6 @@ public class CustomCam {
             }
         }
 
-
-
         if (pathCurve != null) {
             if (curveindex >= pathCurve.size()){
                 curveindex = 0;
@@ -113,27 +111,42 @@ public class CustomCam {
 
     public void handlePlayerMovement(Input input) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return;
+        if (player == null || !decoupled) return;
 
-        if (decoupled) {
-            Vec2 movement = input.getMoveVector();
-            if (movement.lengthSquared() > 0) {
-                float targetDeg = (float) Mth.atan2(movement.x, movement.y) * -Mth.RAD_TO_DEG;
-                targetDeg *= 0.25f;
-                player.setYRot(targetDeg + player.getYRot());
-                input.up = false;
-                input.down = false;
-                input.right = false;
-                input.left = false;
-                input.forwardImpulse = 1;
-                input.leftImpulse = 0;
-            }
-            else {
+        Vec2 mv = input.getMoveVector();
+        if (mv.lengthSquared() <= 0) return;
 
-            }
+        // 1. Pega o yaw da câmera
+        float cameraYaw = Minecraft.getInstance()
+                .gameRenderer
+                .getMainCamera()
+                .getYRot();
+
+        // 2. Ângulo do input, invertido para ficar no sentido certo
+        float inputAngle = (float) Math.toDegrees(Math.atan2(mv.x, mv.y)) * -1f;
+
+        // 3. Angulo desejado em world-space
+        float desiredYaw = Mth.wrapDegrees(cameraYaw + inputAngle);
+
+        // 4. Diferença angular normalizada [-180,180)
+        float currentYaw = player.getYRot();
+        float diff = Mth.wrapDegrees(desiredYaw - currentYaw);
+
+        // 5. Se for lateral/frente, aplica clamp a ±90°
+        if (Math.abs(diff) < 135f) {
+            diff = Mth.clamp(diff, -90f, 90f);
         }
-        else {
 
-        }
+        // 6. Interpola pelo menor caminho
+        float smoothing = 0.5f;
+        float newYaw = currentYaw + diff * smoothing;
+        player.setYRot(Mth.wrapDegrees(newYaw));
+
+        // 7. Zera inputs e força andar pra frente
+        input.up = input.down = input.left = input.right = false;
+        input.forwardImpulse = 1;
+        input.leftImpulse = 0;
     }
+
+
 }

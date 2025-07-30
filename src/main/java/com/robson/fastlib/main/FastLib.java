@@ -1,23 +1,42 @@
 package com.robson.fastlib.main;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.robson.fastlib.api.data.reloader.FastLibDataReloader;
+import com.robson.fastlib.api.events.types.OnRenderEntityEvent;
+import com.robson.fastlib.api.events.types.OnRenderGUIEvent;
 import com.robson.fastlib.api.events.types.OnRenderPatchedEntityEvent;
 import com.robson.fastlib.api.keybinding.BasicKey;
 import com.robson.fastlib.api.keybinding.KeyBinding;
 import com.robson.fastlib.api.registries.RegisteredKeybinding;
 import com.robson.fastlib.api.utils.math.FastLibMathUtils;
+import com.robson.fastlib.api.utils.math.FastVec3f;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import yesman.epicfight.gameasset.Armatures;
 
 @Mod("fastlib")
@@ -32,27 +51,7 @@ public class FastLib {
 
     private void init(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            OnRenderPatchedEntityEvent.EVENT_MANAGER.registerEvent(new OnRenderPatchedEntityEvent() {
 
-                @Override
-                public boolean canTick(Context args) {
-                    return args.entity() instanceof Player;
-                }
-
-                @Override
-                public void onTick(Context args) {
-                    ItemStack itemStack = Items.NETHERITE_SWORD.getDefaultInstance();
-                    PoseStack stack = FastLibMathUtils.correctPoseStack(args.poseStack(),args.poses()[Armatures.BIPED.get().rootJoint.getId()]);
-                    Minecraft.getInstance().getItemRenderer().render(itemStack,
-                            ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, true, stack, args.buffers(), args.light(), args.light(),
-                            Minecraft.getInstance().getItemRenderer().getModel(itemStack, Minecraft.getInstance().level, args.entity(), args.light()));
-                }
-
-                @Override
-                public Byte getFlag() {
-                    return 1;
-                }
-            });
             RegisteredKeybinding.registerKey(new KeyBinding(
                     Minecraft.getInstance().options.keyAttack,
                     new BasicKey() {

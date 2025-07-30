@@ -1,10 +1,8 @@
 package com.robson.fastlib.api.utils.math;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
-import org.joml.Matrix4f;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 
 public class FastLibMathUtils {
@@ -54,14 +52,15 @@ public class FastLibMathUtils {
     }
 
     public static PoseStack correctPoseStack(PoseStack stack, OpenMatrix4f matrix4f){
-        PoseStack newstack = new PoseStack();
-        newstack.pushPose();
-        newstack.last().pose().set(stack.last().pose());
-        newstack.last().pose().mul(matrix4f.m00, matrix4f.m01, matrix4f.m02, matrix4f.m03,
+        PoseStack new_stack = new PoseStack();
+        new_stack.pushPose();
+        new_stack.last().pose().set(stack.last().pose());
+        new_stack.last().pose().mul(
+                matrix4f.m00, matrix4f.m01, matrix4f.m02, matrix4f.m03,
                 matrix4f.m10, matrix4f.m11, matrix4f.m12, matrix4f.m13,
                 matrix4f.m20, matrix4f.m21, matrix4f.m22, matrix4f.m23,
                 matrix4f.m30, matrix4f.m31, matrix4f.m32, matrix4f.m33);
-        return newstack;
+        return new_stack;
     }
 
 }

@@ -1,7 +1,6 @@
 package com.robson.fastlib.api.events.types;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.robson.fastlib.api.events.FlaggedEvent;
 import com.robson.fastlib.api.events.manager.FastLibEventManager;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.LivingEntity;

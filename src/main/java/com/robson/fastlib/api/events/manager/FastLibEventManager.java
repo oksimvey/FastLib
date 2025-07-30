@@ -1,7 +1,7 @@
 package com.robson.fastlib.api.events.manager;
 
 import com.robson.fastlib.api.events.types.FastLibEvent;
-import com.robson.fastlib.api.events.FlaggedEvent;
+import com.robson.fastlib.api.events.types.FlaggedEvent;
 import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;

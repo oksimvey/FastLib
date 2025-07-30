@@ -1,7 +1,6 @@
-package com.robson.fastlib.api.events;
+package com.robson.fastlib.api.events.manager;
 
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
-import com.robson.fastlib.api.events.manager.FastLibEventManager;
 import com.robson.fastlib.api.events.types.FastLibEvent;
 import com.robson.fastlib.api.utils.Scheduler;
 import net.minecraft.client.Minecraft;

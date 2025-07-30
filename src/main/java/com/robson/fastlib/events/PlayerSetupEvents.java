@@ -1,6 +1,6 @@
 package com.robson.fastlib.events;
 
-import com.robson.fastlib.api.events.PlayerCustomTickManager;
+import com.robson.fastlib.api.events.manager.PlayerCustomTickManager;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

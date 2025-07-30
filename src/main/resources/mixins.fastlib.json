@@ -10,6 +10,7 @@
   "client": [
     "CameraInvoker",
     "GUIMixin",
+    "LivingEntityRendererMixin",
     "LocalPlayerMixin",
     "MouseHandlerMixin",
     "PatchedLivingRendererMixin"
