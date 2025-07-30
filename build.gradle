@@ -126,7 +126,6 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     implementation fg.deobf("curse.maven:epic-fight-mod-405076:6640098")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.2.2")
     implementation group: 'org.agrona', name: 'Agrona', version: '0.9.1'
     implementation("com.esotericsoftware:kryo:5.5.0")
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings

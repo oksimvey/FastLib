@@ -109,7 +109,7 @@ public class CustomCam {
 
     }
 
-    public void handlePlayerMovement(Input input) {
+    public void handlePlayerMovement(Input input, short angle) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null || !decoupled) return;
 
@@ -122,11 +122,9 @@ public class CustomCam {
                 .getMainCamera()
                 .getYRot();
 
-        // 2. Ângulo do input, invertido para ficar no sentido certo
-        float inputAngle = (float) Math.toDegrees(Math.atan2(mv.x, mv.y)) * -1f;
 
         // 3. Angulo desejado em world-space
-        float desiredYaw = Mth.wrapDegrees(cameraYaw + inputAngle);
+        float desiredYaw = Mth.wrapDegrees(cameraYaw + angle);
 
         // 4. Diferença angular normalizada [-180,180)
         float currentYaw = player.getYRot();

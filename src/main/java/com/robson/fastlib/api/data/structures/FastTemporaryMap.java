@@ -1,7 +1,5 @@
 package com.robson.fastlib.api.data.structures;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.robson.fastlib.api.utils.math.FastLibMathUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -10,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -18,32 +17,23 @@ public class FastTemporaryMap<A, B> {
 
     private static final ScheduledExecutorService THREADER = Executors.newScheduledThreadPool(1);
 
-    private static final List<FastTemporaryMap<?, ?>> ALL = new ArrayList<>();
-
     private static final int SIZE_DIVISOR = (int) (FastLibMathUtils.EULER * 100f);
 
     protected int SIZE;
 
     protected int KEY_SIZE;
 
-    protected final Cache<A, FastDataParameter<B>> DATA;
+    protected final ConcurrentHashMap<A, FastDataParameter<B>> DATA;
 
     protected final FastDataParameter.DataType VALUE_TYPE;
 
     private volatile boolean threadRunning = false;
 
-    public static void clearAll() {
-        for (FastTemporaryMap<?, ?> data : ALL) {
-            data.clearMap();
-        }
-    }
-
     public FastTemporaryMap(FastDataParameter.DataType type) {
         this.VALUE_TYPE = type;
         this.SIZE = 1;
         this.KEY_SIZE = 1;
-        this.DATA = Caffeine.newBuilder().build();
-        ALL.add(this);
+        this.DATA = new ConcurrentHashMap<>();
         this.threadMap();
     }
 
@@ -57,7 +47,7 @@ public class FastTemporaryMap<A, B> {
 
     protected FastDataParameter<B> getParameter(A key){
         if (key == null) return null;
-        return DATA.getIfPresent(key);
+        return DATA.get(key);
     }
 
     public final void put(A key, B value) {
@@ -78,11 +68,11 @@ public class FastTemporaryMap<A, B> {
     }
 
     protected void clearMap(){
-        DATA.cleanUp();
+        DATA.clear();
     }
 
     protected void resetAccess(A key){
-        Objects.requireNonNull(DATA.getIfPresent(key)).resetAccesses();
+        Objects.requireNonNull(DATA.get(key)).resetAccesses();
     }
 
     protected final void putOnMap(A key, FastDataParameter<B> data){
@@ -90,7 +80,7 @@ public class FastTemporaryMap<A, B> {
     }
 
     protected void threadMap() {
-        if (DATA.asMap().isEmpty()) {
+        if (DATA.isEmpty()) {
             threadRunning = false;
             return;
         }
@@ -100,7 +90,7 @@ public class FastTemporaryMap<A, B> {
         if (Minecraft.getInstance().player != null) {
             Minecraft.getInstance().player.sendSystemMessage(Component.literal("ticking"));
         }
-        for (Map.Entry<A, FastDataParameter<B>> entry : DATA.asMap().entrySet()) {
+        for (Map.Entry<A, FastDataParameter<B>> entry : DATA.entrySet()) {
             A key = entry.getKey();
             FastDataParameter<B> data = entry.getValue();
             if (data.accesses == 0) {
@@ -128,10 +118,10 @@ public class FastTemporaryMap<A, B> {
     }
 
     protected void removeForAllocation(A key, B value){
-        DATA.asMap().remove(key);
+        DATA.remove(key);
     }
 
     public void remove(A key){
-        DATA.asMap().remove(key);
+        DATA.remove(key);
     }
 }

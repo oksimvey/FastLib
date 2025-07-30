@@ -1,8 +1,6 @@
 package com.robson.fastlib.mixins;
 
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
-import net.minecraft.client.CameraType;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +21,7 @@ public class LocalPlayerMixin {
         var data = PlayerDataManager.get((LocalPlayer)(Object)this);
         if (data != null){
             data.getKeyHandler().handleKeyboardInput(input);
-            data.getCamera().handlePlayerMovement(input);
+            data.getCamera().handlePlayerMovement(input, data.getKeyHandler().getKeyboardInput().getInputAngle());
         }
     }
 }
