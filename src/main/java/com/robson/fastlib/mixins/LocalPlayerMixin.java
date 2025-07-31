@@ -21,7 +21,9 @@ public class LocalPlayerMixin {
         var data = PlayerDataManager.get((LocalPlayer)(Object)this);
         if (data != null){
             data.getKeyHandler().handleKeyboardInput(input);
-            data.getCamera().handlePlayerMovement(input, data.getKeyHandler().getKeyboardInput().getInputAngle());
+            if (data.getCamera().isDecoupled()) {
+                data.getCamera().handlePlayerMovement(input, data.getKeyHandler().getKeyboardInput().getInputAngle());
+            }
         }
     }
 }

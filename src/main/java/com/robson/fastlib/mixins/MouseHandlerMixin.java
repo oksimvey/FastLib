@@ -36,7 +36,8 @@ public abstract class MouseHandlerMixin {
 
     @Inject(method = "turnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V"), cancellable = true)
     private void onTurn(CallbackInfo ci) {
-        if (Minecraft.getInstance().options.getCameraType() != CameraType.FIRST_PERSON) {
+        var data = PlayerDataManager.get(this.minecraft.player);
+        if (data != null && data.getCamera().isDecoupled()) {
             ci.cancel();
         }
     }

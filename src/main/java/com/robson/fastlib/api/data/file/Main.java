@@ -3,6 +3,7 @@ package com.robson.fastlib.api.data.file;
 import com.robson.fastlib.api.data.file.manager.DataTypes;
 import com.robson.fastlib.api.data.file.types.ItemData;
 
+import java.io.File;
 import java.nio.file.Path;
 
 public class Main {
@@ -10,7 +11,6 @@ public class Main {
     static Path path = Path.of("src/main/resources/dados");
 
     static Path to = Path.of("src/main/resources/new");
-
 
     public static void main(String[] args) {
 

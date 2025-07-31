@@ -1,7 +1,7 @@
 package com.robson.fastlib.api.events.manager;
 
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
-import com.robson.fastlib.api.events.types.FastLibEvent;
+import com.robson.fastlib.api.events.types.FastLibPlayerEvent;
 import com.robson.fastlib.api.utils.Scheduler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -10,10 +10,10 @@ import java.util.concurrent.TimeUnit;
 
 public interface PlayerCustomTickManager{
 
-    FastLibEventManager<Player, FastLibEvent<Player>> EVENT_MANAGER = new FastLibEventManager<>();
+    FastLibEventManager<FastLibPlayerEvent.Context, FastLibPlayerEvent> EVENT_MANAGER = new FastLibEventManager<>();
 
     static void handle(Player player) {
-        EVENT_MANAGER.shotEvents(player);
+        EVENT_MANAGER.shotEvents(new FastLibPlayerEvent.Context(player, PlayerDataManager.get(player)));
     }
 
     static void startTick(Player player) {

@@ -3,6 +3,7 @@ package com.robson.fastlib.api.camera;
 import com.robson.fastlib.api.utils.math.FastVec3f;
 
 public class SmoothVec3 implements CameraSmoother<FastVec3f> {
+
     private FastVec3f current;
     private FastVec3f target;
     private final float factor;

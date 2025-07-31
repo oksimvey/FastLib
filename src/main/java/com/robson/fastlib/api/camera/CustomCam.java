@@ -1,14 +1,12 @@
 package com.robson.fastlib.api.camera;
 
 
-import com.robson.fastlib.api.utils.math.BezierCurve;
 import com.robson.fastlib.api.utils.math.FastVec2f;
 import com.robson.fastlib.api.utils.math.FastVec3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.phys.Vec2;
 
 import java.util.ArrayList;
@@ -17,6 +15,8 @@ import java.util.List;
 public class CustomCam {
 
     private static final float smoothFactor = 0.05f;
+
+    private float camupdate = 0.01f;
 
     private static boolean decoupled = true;
 
@@ -37,15 +37,23 @@ public class CustomCam {
         this.duration = 1f;
     }
 
+    public boolean isDecoupled() {
+        return decoupled ? !Minecraft.getInstance().options.getCameraType().isFirstPerson() : decoupled;
+    }
+
     public boolean isEnabled() {
         return smoothPosition != null;
     }
 
     public void handleRotation(float yaw, float pitch) {
         smoothYaw.setCurrent(smoothYaw.getCurrent() + yaw * 0.13f);
-        smoothPitch.setCurrent(smoothPitch.getCurrent() + pitch * 0.13f);
-        if (Minecraft.getInstance().player != null) Minecraft.getInstance().player.setXRot(smoothPitch.getCurrent());
+        smoothPitch.setCurrent(Mth.clamp(smoothPitch.getCurrent() + pitch * 0.13f, -70, 70));
+        if (Minecraft.getInstance().player != null) {
+            Minecraft.getInstance().player.setXRot(smoothPitch.getCurrent());
+            if (!isDecoupled()) Minecraft.getInstance().player.setYRot(smoothYaw.getCurrent());
+        }
     }
+
 
     /**
      * Define um caminho de câmera por Bézier 3D.
@@ -56,6 +64,7 @@ public class CustomCam {
         this.duration = duration;
         this.elapsed = 0f;
     }
+
 
     public void setPos(FastVec3f pos){
         this.smoothPosition.setTarget(pos);
@@ -74,18 +83,6 @@ public class CustomCam {
      */
     public void update(float deltaTime) {
         if (Minecraft.getInstance().player == null) return;
-        if (Minecraft.getInstance().player.getMainHandItem().getItem() instanceof SwordItem){
-            if (pathCurve.isEmpty()) {
-                setPathCurve(
-                        BezierCurve.getBezierInterpolatedPoints(List.of(
-                                new FastVec3f(0, 0.5f, 2),
-                                new FastVec3f(2, 0.5f, 0),
-                                new FastVec3f(0, 0.5f, -2),
-                                new FastVec3f(-2, 0.5f, 0),
-                                new FastVec3f(0, 0.5f, 2)), 10)
-                        , 10);
-            }
-        }
 
         if (pathCurve != null) {
             if (curveindex >= pathCurve.size()){
@@ -101,7 +98,6 @@ public class CustomCam {
                 }
             }
         }
-        else setPos(new FastVec3f(-0.25f, 0.5f, -0.75f));
 
         smoothYaw.update(deltaTime);
         smoothPitch.update(deltaTime);
@@ -112,9 +108,6 @@ public class CustomCam {
     public void handlePlayerMovement(Input input, short angle) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null || !decoupled) return;
-
-        Vec2 mv = input.getMoveVector();
-        if (mv.lengthSquared() <= 0) return;
 
         // 1. Pega o yaw da câmera
         float cameraYaw = Minecraft.getInstance()
@@ -145,6 +138,5 @@ public class CustomCam {
         input.forwardImpulse = 1;
         input.leftImpulse = 0;
     }
-
 
 }

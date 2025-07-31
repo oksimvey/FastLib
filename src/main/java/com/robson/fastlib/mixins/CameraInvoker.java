@@ -57,17 +57,18 @@ public abstract class CameraInvoker {
             CustomCam cam = PlayerDataManager.get(player).getCamera();
             if (cam != null) {
                 ci.cancel();
+                boolean FirstNamePerson = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
                 cam.update(p_90580_);
                 this.initialized = true;
                 this.level = p_90576_;
                 this.entity = p_90577_;
                 this.detached = p_90578_;
-                FastVec2f angles = cam.getRotation();
-                setRotation(angles.x(), angles.y());
-                FastVec3f offset = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON ? new FastVec3f(0, 0, 0) :
+                    FastVec2f angles = cam.getRotation();
+                    setRotation(angles.x(), angles.y());
+                FastVec3f offset = FirstNamePerson ? new FastVec3f(0, 0, 0) :
                         cam.getOffset().rotate(this.yRot);
                 float pitchRadians = FastLibMathUtils.degreeToRadians(this.xRot);
-                float verticalOffset = (float) Math.sin(pitchRadians);
+                float verticalOffset = FirstNamePerson ? 0 : (float) Math.sin(pitchRadians);
                 this.setPosition(new Vec3(
                         Mth.lerp(p_90580_, p_90577_.xo, p_90577_.getX()),
                         Mth.lerp(p_90580_, p_90577_.yo, p_90577_.getY()) +
