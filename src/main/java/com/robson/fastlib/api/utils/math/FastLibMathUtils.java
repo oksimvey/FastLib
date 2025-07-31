@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
+import yesman.epicfight.gameasset.Armatures;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 public class FastLibMathUtils {
 

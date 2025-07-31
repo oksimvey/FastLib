@@ -1,6 +1,7 @@
-package com.robson.fastlib.api.data.file;
+package com.robson.fastlib.api.data.file.manager;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Output;
 
 import java.io.ByteArrayOutputStream;
@@ -16,10 +17,10 @@ import java.nio.file.Path;
 
 public class DataSerializer {
 
-    private static final Kryo kryo = new Kryo();
+     static final Kryo kryo = new Kryo();
 
-   static {
-       kryo.register(MeuObjeto.MeuObjetoParams.class, new MeuObjeto.MeuRecordSerializer());
+   public static void registerKryo(Class<?> clazz, Serializer<?> serializer){
+       kryo.register(clazz, serializer);
     }
 
     public static byte[] toBytes(Object obj) {
@@ -30,15 +31,14 @@ public class DataSerializer {
         return stream.toByteArray();
     }
 
-
-    // Variante que usa o targetClass para leitura segura
     public static <T> T fromFastdata(Path fastdataFile, Class<T> targetClass) throws IOException {
         byte[] bytes = Files.readAllBytes(fastdataFile);
         Input input = new Input(new ByteArrayInputStream(bytes));
-        T obj = kryo.readObject(input, targetClass); // aqui passa a classe explícita
+        T obj = kryo.readObject(input, targetClass);
         input.close();
         return obj;
     }
+
     private static final Gson gson = new Gson();
 
     public static void convertJsonDirectoryToFastdata(Path inputDir, Path outputDir, Class<?> targetClass) throws IOException {

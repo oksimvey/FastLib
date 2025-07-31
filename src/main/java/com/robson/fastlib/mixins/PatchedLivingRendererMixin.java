@@ -1,7 +1,9 @@
 package com.robson.fastlib.mixins;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.robson.fastlib.api.events.types.OnRenderPatchedEntityEvent;
+import com.robson.fastlib.api.utils.math.FastLibMathUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,6 +23,7 @@ public class PatchedLivingRendererMixin {
 
     @Inject(method = "renderLayer", at = @At(value = "HEAD"), remap = false)
     public void render(LivingEntityRenderer<?, ?> renderer, LivingEntityPatch<?> entitypatch, LivingEntity entity, OpenMatrix4f[] poses, MultiBufferSource buffer, PoseStack poseStack, int packedLight, float partialTicks, CallbackInfo ci){
+
         OnRenderPatchedEntityEvent.EVENT_MANAGER.shotEvents(new OnRenderPatchedEntityEvent.Context(entity, entitypatch, poseStack, buffer, partialTicks, packedLight, entitypatch.getArmature(), poses));
     }
 }
