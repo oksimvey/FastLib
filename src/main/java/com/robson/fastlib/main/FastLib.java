@@ -27,7 +27,6 @@ public class FastLib {
             PlayerCustomTickManager.EVENT_MANAGER.registerEvent(new FastLibPlayerEvent() {
 
 
-
                 @Override
                 public boolean canTick(Context args) {
                     return true;

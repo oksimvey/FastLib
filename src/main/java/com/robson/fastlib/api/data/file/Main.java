@@ -13,7 +13,7 @@ public class Main {
     static Path to = Path.of("src/main/resources/new");
 
     public static void main(String[] args) {
-
+        write();
     }
 
     static void write() {
@@ -23,9 +23,10 @@ public class Main {
     private static void read() {
         System.out.println("running");
         ItemData data = DataTypes.ITEMS.read("blade.fastdata");
-
         System.out.println(data.getName());
         System.out.println(data.getStacks());
-
+        for (float f : data.getArr()){
+            System.out.println(f);
+        }
     }
 }

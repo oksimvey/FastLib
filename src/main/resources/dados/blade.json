@@ -1,4 +1,5 @@
 {
   "name": "demon balde",
-  "stacks": 2
+  "stacks": 2,
+  "arr": [3.2, 3.2, 9.2, 0.2]
 }
