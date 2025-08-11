@@ -17,7 +17,7 @@ public class FastLibEventManager<A, T extends FastLibEvent<A>> {
 
     public void shotEvents(A arg){
         for (FastLibEvent<A> event : events){
-            if (event instanceof FlaggedEvent<?> event1 && Minecraft.getInstance().player != null && Minecraft.getInstance().player.tickCount % event1.getFlag() != 0){
+            if (event instanceof FlaggedEvent event1 && Minecraft.getInstance().player != null && Minecraft.getInstance().player.tickCount % event1.getFlag() != 0){
                 continue;
             }
             if (event.canTick(arg)){

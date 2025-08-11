@@ -1,8 +1,7 @@
 package com.robson.fastlib.api.events.types;
 
-public interface FlaggedEvent<A extends Byte> {
+public interface FlaggedEvent {
 
-    A getFlag();
-
+    byte getFlag();
 
 }

@@ -28,4 +28,5 @@ public class PlayerSetupEvents {
             PlayerCustomTickManager.startRespawnTick(event.getEntity());
         }
     }
+
 }

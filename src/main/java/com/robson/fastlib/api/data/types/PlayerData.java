@@ -14,7 +14,7 @@ public class PlayerData {
     private final KeyHandler keyHandler;
 
     public PlayerData() {
-        this.camera = new CustomCam(0, 0, new FastVec3f(-0.25f, 0.5f, -1));
+        this.camera = new CustomCam(0, 0, new FastVec3f(0, 0, 0));
         this.keyHandler = new KeyHandler();
     }
 
@@ -23,7 +23,7 @@ public class PlayerData {
     }
 
     public CustomCam getCamera() {
-        return camera.isEnabled() ? camera : null;
+        return  camera ;
     }
 
     public void tick(Player player){

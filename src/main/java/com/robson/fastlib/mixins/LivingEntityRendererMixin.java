@@ -16,6 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @OnlyIn(Dist.CLIENT)
 public class LivingEntityRendererMixin {
 
+
+
     @Inject(method = "render*", at = @At("HEAD"))
     public void renderI(LivingEntity entity, float yaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffers, int light, CallbackInfo info) {
         OnRenderEntityEvent.EVENT_MANAGER.shotEvents(new OnRenderEntityEvent.Context(entity, poseStack, buffers, partialTicks, light));

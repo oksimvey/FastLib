@@ -9,6 +9,7 @@
   "refmap": "mixins.fastlib.refmap.json",
   "client": [
     "CameraInvoker",
+    "CameraTypeMixin",
     "GUIMixin",
     "LivingEntityRendererMixin",
     "LocalPlayerMixin",

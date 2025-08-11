@@ -16,9 +16,7 @@ public class CustomCam {
 
     private static final float smoothFactor = 0.05f;
 
-    private float camupdate = 0.01f;
-
-    private static boolean decoupled = true;
+    private boolean decoupled = false;
 
     private final SmoothFloat smoothYaw;
     private final SmoothFloat smoothPitch;
@@ -42,7 +40,7 @@ public class CustomCam {
     }
 
     public boolean isEnabled() {
-        return smoothPosition != null;
+        return false;
     }
 
     public void handleRotation(float yaw, float pitch) {

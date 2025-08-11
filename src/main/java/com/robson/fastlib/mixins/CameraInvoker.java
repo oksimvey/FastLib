@@ -55,7 +55,7 @@ public abstract class CameraInvoker {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && PlayerDataManager.get(player) != null) {
             CustomCam cam = PlayerDataManager.get(player).getCamera();
-            if (cam != null) {
+            if (cam != null && cam.isEnabled()) {
                 ci.cancel();
                 boolean FirstNamePerson = Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
                 cam.update(p_90580_);
