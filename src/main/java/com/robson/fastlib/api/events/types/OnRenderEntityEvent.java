@@ -5,7 +5,7 @@ import com.robson.fastlib.api.events.manager.FastLibEventManager;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.LivingEntity;
 
-public abstract class OnRenderEntityEvent extends FastLibEvent<OnRenderEntityEvent.Context> implements FlaggedEvent{
+public abstract class OnRenderEntityEvent extends FastLibEvent<OnRenderEntityEvent.Context> implements FlaggedEvent, RenderingEvent {
 
     public static final FastLibEventManager<Context, OnRenderEntityEvent> EVENT_MANAGER = new FastLibEventManager<>();
 

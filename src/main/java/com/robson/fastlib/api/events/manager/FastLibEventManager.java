@@ -2,6 +2,7 @@ package com.robson.fastlib.api.events.manager;
 
 import com.robson.fastlib.api.events.types.FastLibEvent;
 import com.robson.fastlib.api.events.types.FlaggedEvent;
+import com.robson.fastlib.api.events.types.RenderingEvent;
 import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class FastLibEventManager<A, T extends FastLibEvent<A>> {
 
     public void shotEvents(A arg){
         for (FastLibEvent<A> event : events){
-            if (event instanceof FlaggedEvent event1 && Minecraft.getInstance().player != null && Minecraft.getInstance().player.tickCount % event1.getFlag() != 0){
+            if ((event instanceof RenderingEvent && Minecraft.getInstance().isPaused()) || (event instanceof FlaggedEvent event1 && Minecraft.getInstance().player != null && Minecraft.getInstance().player.tickCount % event1.getFlag() != 0)){
                 continue;
             }
             if (event.canTick(arg)){

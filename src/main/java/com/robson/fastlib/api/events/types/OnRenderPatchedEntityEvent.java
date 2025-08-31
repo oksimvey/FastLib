@@ -8,7 +8,7 @@ import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
-public abstract class OnRenderPatchedEntityEvent extends FastLibEvent<OnRenderPatchedEntityEvent.Context> implements FlaggedEvent {
+public abstract class OnRenderPatchedEntityEvent extends FastLibEvent<OnRenderPatchedEntityEvent.Context> implements FlaggedEvent, RenderingEvent{
 
     public static final FastLibEventManager<Context, OnRenderPatchedEntityEvent> EVENT_MANAGER = new FastLibEventManager<>();
 
