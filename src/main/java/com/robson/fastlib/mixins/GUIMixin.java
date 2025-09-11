@@ -25,5 +25,10 @@ public class GUIMixin {
             OnRenderGUIEvent.EVENT_MANAGER.shotEvents(new OnRenderGUIEvent.Context(guiGraphics, partialticks, minecraft.player, minecraft, minecraft.getWindow().getGuiScaledHeight(), minecraft.getWindow().getGuiScaledWidth()));
         }
     }
+
+    @Redirect(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/CameraType;isFirstPerson()Z"))
+    private boolean isFirstPerson(CameraType cameraType) {
+        return true;
+    }
 }
 

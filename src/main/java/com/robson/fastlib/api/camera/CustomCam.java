@@ -16,7 +16,7 @@ public class CustomCam {
 
     private static final float smoothFactor = 0.05f;
 
-    private boolean decoupled = false;
+    private boolean decoupled = true;
 
     private final SmoothFloat smoothYaw;
     private final SmoothFloat smoothPitch;
@@ -26,13 +26,19 @@ public class CustomCam {
     private float elapsed;
     private float duration;
 
+    public void setDecoupled(boolean decoupled) {
+        if (this.decoupled && !decoupled){
+            this.decoupled = false;
+            this.handleRotation(0, 0);
+        }
+        this.decoupled = decoupled;
+    }
+
     public CustomCam(float initYaw, float initPitch, FastVec3f initPos) {
         this.smoothYaw = new SmoothFloat(initYaw, smoothFactor);
         this.smoothPitch = new SmoothFloat(initPitch, smoothFactor);
         this.smoothPosition = new SmoothVec3(initPos, smoothFactor);
         this.pathCurve = new ArrayList<>();
-        this.elapsed = 0f;
-        this.duration = 1f;
     }
 
     public boolean isDecoupled() {
@@ -40,7 +46,7 @@ public class CustomCam {
     }
 
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     public void handleRotation(float yaw, float pitch) {

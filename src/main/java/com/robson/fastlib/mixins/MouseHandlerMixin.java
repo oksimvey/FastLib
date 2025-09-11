@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @OnlyIn(Dist.CLIENT)
 public abstract class MouseHandlerMixin {
 
-
     @Shadow @Final private Minecraft minecraft;
 
     @Shadow private double accumulatedDX;
@@ -28,7 +27,7 @@ public abstract class MouseHandlerMixin {
     @Inject(method = "turnPlayer", at = @At(value = "HEAD"))
     private void onTurnStart(CallbackInfo ci) {
         var data = PlayerDataManager.get(this.minecraft.player);
-        if ((accumulatedDX != 0 || accumulatedDY != 0) && data != null) {
+        if (((accumulatedDX != 0 || accumulatedDY != 0) && data != null)) {
             data.getKeyHandler().handleMouseInput((float) accumulatedDX, (float) accumulatedDY);
             data.getCamera().handleRotation((float) accumulatedDX, (float) accumulatedDY);
         }

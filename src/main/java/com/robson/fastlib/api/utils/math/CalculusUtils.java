@@ -5,7 +5,6 @@ import net.minecraft.world.phys.Vec3;
 public interface CalculusUtils {
 
     static FastVec3f integrate(FastVec3f relativeVector, float speed, float interval, int size){
-
         FastVec3f position = FastVec3f.ZERO;
         for (float i = 0; i < size; i+= interval){
             position = position.add(relativeVector.scale(speed * interval));

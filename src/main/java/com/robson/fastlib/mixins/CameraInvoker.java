@@ -68,7 +68,7 @@ public abstract class CameraInvoker {
                 FastVec3f offset = FirstNamePerson ? new FastVec3f(0, 0, 0) :
                         cam.getOffset().rotate(this.yRot);
                 float pitchRadians = FastLibMathUtils.degreeToRadians(this.xRot);
-                float verticalOffset = FirstNamePerson ? 0 : (float) Math.sin(pitchRadians);
+                float verticalOffset = FirstNamePerson ? 0 : (float) (-0.75f * cam.getOffset().z() * Math.sin(pitchRadians));
                 this.setPosition(new Vec3(
                         Mth.lerp(p_90580_, p_90577_.xo, p_90577_.getX()),
                         Mth.lerp(p_90580_, p_90577_.yo, p_90577_.getY()) +

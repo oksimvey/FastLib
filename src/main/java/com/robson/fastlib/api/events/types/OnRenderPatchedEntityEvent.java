@@ -13,5 +13,6 @@ public abstract class OnRenderPatchedEntityEvent extends FastLibEvent<OnRenderPa
     public static final FastLibEventManager<Context, OnRenderPatchedEntityEvent> EVENT_MANAGER = new FastLibEventManager<>();
 
     public record Context(LivingEntity entity, LivingEntityPatch<?> entityPatch, PoseStack poseStack, MultiBufferSource buffers,
-                          float partialTicks, int light, Armature armature, OpenMatrix4f[] poses){ }
+                          float partialTicks, int light, Armature armature, OpenMatrix4f[] poses){
+    }
 }

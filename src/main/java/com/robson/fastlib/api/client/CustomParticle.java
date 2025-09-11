@@ -58,7 +58,7 @@ public class CustomParticle extends TextureSheetParticle {
         this.zd = zd;
         this.quadSize *= 1f;
         this.scale(1.5f);
-        this.lifetime = 5 + (int) (Math.random() * 15);
+        this.lifetime = 20 + (int) (Math.random() * 15);
         sprites = spriteSet;
         this.gravity = 0.0F;
         this.setSpriteFromAge(spriteSet);
@@ -75,8 +75,8 @@ public class CustomParticle extends TextureSheetParticle {
     @Override
     public void tick() {
         super.tick();
-        this.xd = Math.cos(Math.toRadians(this.lifetime * 10)) * randomFactor/ 5;
-        this.zd = Math.sin(Math.toRadians(this.lifetime * 10)) * randomFactor/ 5;
+        this.xd = -Math.sin(Math.toRadians(this.lifetime * 10)) * randomFactor/ 10;
+        this.zd = Math.cos(Math.toRadians(this.lifetime * 10)) * randomFactor/ 10;
     }
 
     @Override

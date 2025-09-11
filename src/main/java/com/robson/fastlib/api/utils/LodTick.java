@@ -17,23 +17,23 @@ public class LodTick {
 
     private static final FastTemporaryMap<Vec3, Integer> FLAGGED_VECTORS_NEXT_TICK = new FastTemporaryMap<>(FastDataParameter.DataType.VECTORS);
 
-    public static boolean canTick(Entity entity, float multiplier){
-        if (entity == null || FLAGGED_ENTITIES.contains(entity) || Minecraft.getInstance().player == null) return false;
+    public static float canTick(Entity entity, float multiplier){
+        if (entity == null || FLAGGED_ENTITIES.contains(entity) || Minecraft.getInstance().player == null) return 0;
         short distance = (short) ((short) 1 + (computeDistance(entity.position()) * multiplier));
         int tickNow = Minecraft.getInstance().player.tickCount;
         if (FLAGGED_NEXT_TICK.contains(entity)) {
             int nextTick = FLAGGED_NEXT_TICK.get(entity);
-            if (tickNow < nextTick) return false;
+            if (tickNow < nextTick) return 0;
         }
 
         int remainder = tickNow % distance;
         if (remainder != 0) {
             int nextTick = tickNow + (distance - remainder);
             FLAGGED_NEXT_TICK.put(entity, nextTick);
-            return false;
+            return 0;
         }
         FLAGGED_NEXT_TICK.remove(entity);
-        return true;
+        return distance;
 
     }
 

@@ -69,7 +69,7 @@ public class BezierCurve {
         return getBezierInterpolatedPoints(points, 0, points.size() - 1, interpolatedResults);
     }
 
-    public static List<FastVec3f> getBezierInterpolatedPoints(List<FastVec3f> points, int sliceBegin, int sliceEnd, int interpolatedResults) {
+    private static List<FastVec3f> getBezierInterpolatedPoints(List<FastVec3f> points, int sliceBegin, int sliceEnd, int interpolatedResults) {
         if (points.size() < 3) {
             return null;
         } else {
