@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec2;
 
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ public class CustomCam {
     private static final float smoothFactor = 0.05f;
 
     private boolean decoupled = true;
+
+    private LivingEntity target;
 
     private final SmoothFloat smoothYaw;
     private final SmoothFloat smoothPitch;
