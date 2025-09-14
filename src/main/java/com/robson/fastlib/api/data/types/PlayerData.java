@@ -6,6 +6,9 @@ import com.robson.fastlib.api.utils.math.FastVec3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 public class PlayerData {
 
@@ -13,8 +16,8 @@ public class PlayerData {
 
     private final KeyHandler keyHandler;
 
-    public PlayerData() {
-        this.camera = new CustomCam(0, 0, new FastVec3f(0, 0, 0));
+    public PlayerData(Player player) {
+        this.camera = new CustomCam(0, 0, new FastVec3f(0, 0, 0), EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class));
         this.keyHandler = new KeyHandler();
     }
 

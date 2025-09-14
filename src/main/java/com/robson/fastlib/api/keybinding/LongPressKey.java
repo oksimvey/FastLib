@@ -1,5 +1,6 @@
 package com.robson.fastlib.api.keybinding;
 
+import net.minecraft.client.KeyMapping;
 import net.minecraft.world.entity.player.Player;
 
 public abstract class LongPressKey extends BasicKey {
@@ -8,7 +9,8 @@ public abstract class LongPressKey extends BasicKey {
     protected boolean longPressTriggered = false;
     private byte presscounter = 0;
 
-    public LongPressKey(byte counterforstart) {
+    public LongPressKey(KeyMapping mapping, byte counterforstart) {
+        super(mapping);
         this.counterforstart = counterforstart;
     }
 

@@ -30,6 +30,9 @@ public abstract class MouseHandlerMixin {
         if (((accumulatedDX != 0 || accumulatedDY != 0) && data != null)) {
             data.getKeyHandler().handleMouseInput((float) accumulatedDX, (float) accumulatedDY);
             data.getCamera().handleRotation((float) accumulatedDX, (float) accumulatedDY);
+            if (data.getCamera().getTarget() != null){
+                data.getCamera().triggerTargetChange((float) accumulatedDX, (float) accumulatedDY);
+            }
         }
     }
 

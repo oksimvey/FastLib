@@ -21,9 +21,9 @@ public class KeyHandler {
 
     public void tick(Player player) {
         if (player != null && Minecraft.getInstance().screen == null) {
-           for (KeyBinding keyBinding : RegisteredKeybinding.getRegisteredKeys()){
+           for (BasicKey keyBinding : RegisteredKeybinding.getRegisteredKeys()){
                if (keyBinding.shouldHandle(player)){
-                   handleKeyInput(player, keyBinding.getKeyMapping(), keyBinding.getKey());
+                   handleKeyInput(player, keyBinding.getKeyMapping(), keyBinding);
                }
            }
         }

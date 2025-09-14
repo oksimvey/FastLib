@@ -1,19 +1,19 @@
 package com.robson.fastlib.api.registries;
 
-import com.robson.fastlib.api.keybinding.KeyBinding;
+import com.robson.fastlib.api.keybinding.BasicKey;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RegisteredKeybinding {
 
-    private static List<KeyBinding> registeredKeys = new ArrayList<>();
+    private static List<BasicKey> registeredKeys = new ArrayList<>();
 
-    public static void registerKey(KeyBinding keyBinding) {
+    public static void registerKey(BasicKey keyBinding) {
         registeredKeys.add(keyBinding);
     }
 
-    public static List<KeyBinding> getRegisteredKeys() {
+    public static List<BasicKey> getRegisteredKeys() {
         return registeredKeys;
     }
 

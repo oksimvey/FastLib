@@ -1,12 +1,16 @@
 package com.robson.fastlib.api.keybinding;
 
+import net.minecraft.client.KeyMapping;
 import net.minecraft.world.entity.player.Player;
 
 public abstract class BasicKey {
 
     protected boolean isPressed;
 
-    public BasicKey() {
+    private final KeyMapping mapping;
+
+    public BasicKey(KeyMapping mapping) {
+        this.mapping = mapping;
         this.isPressed = false;
     }
 
@@ -16,6 +20,13 @@ public abstract class BasicKey {
             this.isPressed = true;
         }
     }
+
+    public KeyMapping getKeyMapping(){
+        return mapping;
+    }
+
+
+    public abstract boolean shouldHandle(Player player);
 
     public boolean isPressed() {
         return this.isPressed;

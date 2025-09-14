@@ -5,6 +5,8 @@ import com.robson.fastlib.api.events.types.FastLibPlayerEvent;
 import com.robson.fastlib.api.utils.Scheduler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,7 +15,7 @@ public interface PlayerCustomTickManager{
     FastLibEventManager<FastLibPlayerEvent.Context, FastLibPlayerEvent> EVENT_MANAGER = new FastLibEventManager<>();
 
     static void handle(Player player) {
-        EVENT_MANAGER.shotEvents(new FastLibPlayerEvent.Context(player, PlayerDataManager.get(player)));
+        EVENT_MANAGER.shotEvents(new FastLibPlayerEvent.Context(player, PlayerDataManager.get(player), EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class)));
     }
 
     static void startTick(Player player) {

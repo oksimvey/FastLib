@@ -14,6 +14,7 @@
     "LivingEntityRendererMixin",
     "LocalPlayerMixin",
     "MouseHandlerMixin",
-    "PatchedLivingRendererMixin"
+    "PatchedLivingRendererMixin",
+    "SkinnedMeshMixin"
   ]
 }

@@ -22,13 +22,24 @@ public class SmoothFloat implements CameraSmoother<Float> {
             this.target = target;
         }
 
-        @Override
-        public void update(float deltaTime) {
-            float alpha = 1f - (float)Math.exp(-factor * deltaTime);
-            current += (target - current) * alpha;
-        }
+    @Override
+    public void update(float deltaTime) {
+        float alpha = 1f - (float)Math.exp(-factor * deltaTime);
 
-        @Override
+        // diferença angular mínima em [-180, 180]
+        float diff = (target - current) % 360f;
+        if (diff > 180f) diff -= 360f;
+        if (diff < -180f) diff += 360f;
+
+        current += diff * alpha;
+
+        // manter current normalizado
+        if (current >= 180f) current -= 360f;
+        if (current < -180f) current += 360f;
+    }
+
+
+    @Override
         public Float getCurrent() {
             return current;
         }

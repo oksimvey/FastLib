@@ -1,8 +1,14 @@
 package com.robson.fastlib.api.utils.math;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
@@ -51,6 +57,17 @@ public class FastLibMathUtils {
 
     public static AABB createAABBAroundEnt(Entity ent, float size) {
         return new AABB(ent.getX() + size, ent.getY() + size * 1.5, ent.getZ() + size, ent.getX() - size, ent.getY() - size, ent.getZ() - size);
+    }
+
+    public static float wrapDegrees(float angle) {
+        angle = angle % 360.0F;
+        if (angle >= 180.0F) {
+            angle -= 360.0F;
+        }
+        if (angle < -180.0F) {
+            angle += 360.0F;
+        }
+        return angle;
     }
 
     public static PoseStack correctPoseStack(PoseStack stack, OpenMatrix4f matrix4f){
