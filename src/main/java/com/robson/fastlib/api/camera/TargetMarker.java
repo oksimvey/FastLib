@@ -57,7 +57,7 @@ public class TargetMarker extends EntityUI {
         Vec3 cameraPos = minecraft.gameRenderer.getMainCamera().getPosition();
 
         // Get position of the entity with configurable offset
-        Vec3 targetPos = target.position().add(0, target.getBbHeight() + 0.1f, 0);
+        Vec3 targetPos = target.position().add(0, target.getBbHeight() + 0.25f, 0);
 
         // Calculate relative position
         float x = (float) (targetPos.x - cameraPos.x);

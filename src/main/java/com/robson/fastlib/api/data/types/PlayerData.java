@@ -16,8 +16,8 @@ public class PlayerData {
 
     private final KeyHandler keyHandler;
 
-    public PlayerData(Player player) {
-        this.camera = new CustomCam(0, 0, new FastVec3f(0, 0, 0), EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class));
+    public PlayerData() {
+        this.camera = new CustomCam(0, 0, new FastVec3f(0, 0, 0));
         this.keyHandler = new KeyHandler();
     }
 

@@ -11,12 +11,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CustomCam {
@@ -30,7 +26,6 @@ public class CustomCam {
     private final SmoothFloat smoothYaw;
     private final SmoothFloat smoothPitch;
     private final SmoothVec3 smoothPosition;
-    private final PlayerPatch<Player> playerPatch;
     boolean targetcooldown = false;
 
     private Cutscene activeCutscene;
@@ -53,15 +48,14 @@ public class CustomCam {
         return target;
     }
 
-    public CustomCam(float initYaw, float initPitch, FastVec3f initPos, PlayerPatch<Player> playerPatch) {
-        this.playerPatch = playerPatch;
+    public CustomCam(float initYaw, float initPitch, FastVec3f initPos) {
         this.smoothYaw = new SmoothFloat(initYaw, smoothFactor);
         this.smoothPitch = new SmoothFloat(initPitch, smoothFactor);
         this.smoothPosition = new SmoothVec3(initPos, 0.025f);
     }
 
     public boolean isDecoupled() {
-        return decoupled && !Minecraft.getInstance().options.getCameraType().isFirstPerson() && target == null;
+        return isCutsceneActive() || (decoupled && !Minecraft.getInstance().options.getCameraType().isFirstPerson() && target == null);
     }
 
     public boolean isEnabled() {
@@ -69,6 +63,13 @@ public class CustomCam {
     }
 
     public void handleRotation(float yaw, float pitch) {
+        if (isCutsceneActive()){
+            if (Minecraft.getInstance().player != null) {
+                Minecraft.getInstance().player.setYRot(Minecraft.getInstance().player.getYRot()  + yaw * 0.13f);
+                Minecraft.getInstance().player.setXRot(Mth.clamp(Minecraft.getInstance().player.getXRot() + pitch * 0.13f, -70, 70));
+            }
+            return;
+        }
         smoothYaw.setCurrent(smoothYaw.getCurrent() + yaw * 0.13f);
         smoothPitch.setCurrent(Mth.clamp(smoothPitch.getCurrent() + pitch * 0.13f, -70, 70));
         if (Minecraft.getInstance().player != null) {
@@ -82,23 +83,18 @@ public class CustomCam {
             this.activeCutscene = cutscene;
             this.cutsceneFrameIndex = 0;
             float interval = cutscene.getDuration() / cutscene.getKeyFrames().size() * 1000;
-            playCutscene((long) interval, this.playerPatch != null ? this.playerPatch.getYRot() : 0f);
+            playCutscene((long) interval, Minecraft.getInstance().player != null ? Minecraft.getInstance().player.getYRot() : 0f);
         }
     }
 
     private void playCutscene(long interval, float intialrot){
         if (this.activeCutscene.getKeyFrames().size() > cutsceneFrameIndex){
             Cutscene.CutsceneKeyFrame keyFrame = this.activeCutscene.getKeyFrames().get(cutsceneFrameIndex);
-            if (this.activeCutscene.getType() == Cutscene.Type.LOCAL && this.playerPatch != null){
-                FastVec3f pos = keyFrame.getPosition().rotate(this.playerPatch.getYRot());
+            if (Minecraft.getInstance().player  != null){
+                FastVec3f pos = keyFrame.getPosition();
                 this.smoothPosition.setTarget(pos);
                 this.smoothYaw.setTarget(keyFrame.getRotation().x() + intialrot);
                 this.smoothPitch.setTarget(keyFrame.getRotation().y());
-            }
-            else {
-                smoothPosition.setTarget(keyFrame.getPosition());
-                smoothYaw.setTarget(keyFrame.getRotation().x());
-                smoothPitch.setTarget(keyFrame.getRotation().y());
             }
             cutsceneFrameIndex++;
             Scheduler.schedule(()-> {
@@ -111,9 +107,6 @@ public class CustomCam {
     public boolean isCutsceneActive() {
         return activeCutscene != null;
     }
-
-
-
 
 
     public void setPos(FastVec3f pos){
@@ -151,7 +144,7 @@ public class CustomCam {
 
             float yaw = (float) (Math.toDegrees(Math.atan2(xz.y(), xz.x())))  -  90;
 
-            float pitch = -(float)( Math.toDegrees(Math.atan2(dy, horizontalDist))) ;
+            float pitch = -(float)(Math.toDegrees(Math.atan2(dy, horizontalDist))) ;
 
             smoothYaw.setTarget(FastLibMathUtils.wrapDegrees(yaw));
             smoothPitch.setTarget(FastLibMathUtils.wrapDegrees(pitch));
@@ -172,7 +165,7 @@ public class CustomCam {
             LivingEntity selected = null;
             float intial = Float.MAX_VALUE;
             for (Entity entity : referenceEntity.level().getEntities(referenceEntity, FastLibMathUtils.createAABBAroundEnt(referenceEntity, searchradius))){
-                if (entity instanceof LivingEntity && entity != playerPatch.getOriginal() && entity != referenceEntity){
+                if (entity instanceof LivingEntity && entity !=  Minecraft.getInstance().player  && entity != referenceEntity){
                     float dist = (float) referencePosition.distanceTo(entity.position());
                     if (dist < intial) {
                         if (targetChange && dist > referencePosition.distanceTo(referenceEntity.position())){
@@ -195,8 +188,8 @@ public class CustomCam {
     public void triggerTargetChange(float dx, float dy) {
         FastVec2f movedVector = new FastVec2f(dx, dy);
         float length = movedVector.length();
-        if (!targetcooldown && length > 7) {
-            movedVector = movedVector.rotate(playerPatch.getYRot()).scale(0.75f);
+        if (!targetcooldown && length > 7 &&  Minecraft.getInstance().player != null) {
+            movedVector = movedVector.rotate(Minecraft.getInstance().player.getYRot()).scale(0.75f);
             Vec3 targetvec = new Vec3(
                     (float) (target.getX() - movedVector.x()),
                     (float) (target.getY() + target.getBbHeight() / 2 - (dy / 3)),

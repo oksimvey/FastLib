@@ -1,7 +1,6 @@
 package com.robson.fastlib.fastlibevents;
 
 import com.robson.fastlib.api.camera.CustomCam;
-import com.robson.fastlib.api.camera.Cutscene;
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
 import com.robson.fastlib.api.events.manager.PlayerCustomTickManager;
 import com.robson.fastlib.api.events.types.FastLibPlayerEvent;
@@ -9,7 +8,6 @@ import com.robson.fastlib.api.keybinding.BasicKey;
 import com.robson.fastlib.api.keybinding.KeyHandler;
 import com.robson.fastlib.api.registries.RegisteredKeybinding;
 import com.robson.fastlib.api.utils.Scheduler;
-import com.robson.fastlib.api.utils.math.FastVec2f;
 import com.robson.fastlib.api.utils.math.FastVec3f;
 import com.robson.fastlib.events.RegisterKeybinding;
 import net.minecraft.client.Minecraft;
@@ -17,41 +15,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import yesman.epicfight.api.client.animation.property.TrailInfo;
 import yesman.epicfight.client.ClientEngine;
-import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
 import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.skill.SkillDataKey;
 import yesman.epicfight.skill.SkillDataKeys;
 import yesman.epicfight.skill.SkillDataManager;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CameraEvents {
 
     public static void registerEvent() {
-
-        RegisteredKeybinding.registerKey(new BasicKey(EpicFightKeyMappings.GUARD) {
-            @Override
-            public boolean shouldHandle(Player player) {
-                return true;
-            }
-
-            @Override
-            public void onPress(Player player) {
-
-                List<Cutscene.CutsceneKeyFrame> keyFrames = Arrays.asList(
-                        new Cutscene.CutsceneKeyFrame(new FastVec3f(0, 0, 0), new FastVec2f(0, 0)),
-                        new Cutscene.CutsceneKeyFrame(new FastVec3f(3, 0.5f, 1.5f), new FastVec2f(90, 0)),
-                        new Cutscene.CutsceneKeyFrame(new FastVec3f(7, 1, 3), new FastVec2f(180, 10))
-                );
-
-                Cutscene cutscene = new Cutscene(Cutscene.Type.LOCAL, keyFrames, 5f, 15);
-                PlayerDataManager.get(player).getCamera().startCutscene(cutscene, false);
-            }
-        });
-
         RegisteredKeybinding.registerKey(new BasicKey(RegisterKeybinding.LOCK_ON) {
             @Override
             public boolean shouldHandle(Player player) {
@@ -126,7 +100,7 @@ public class CameraEvents {
                     if (args.player().getVehicle() != null) {
                         zmodifier += args.player().getVehicle().getBbHeight() / 5;
                     }
-                    float xmodifier = istargeting ? 0 : -0.5f + (zmodifier / 50);
+                    float xmodifier = istargeting ? 0 : -0.5f ;
                     float ymodifier = -0.05f + (zmodifier / 5);
                     if (istargeting) {
                         ymodifier += 0.75f + (args.playerData().getCamera().getTarget().getBbHeight() / 10);

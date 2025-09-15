@@ -14,7 +14,7 @@ public class PlayerDataManager {
 
     public static void init(Player player){
 
-            CACHE.put(player, new PlayerData(player));
+            CACHE.put(player, new PlayerData());
 
     }
 

@@ -9,19 +9,11 @@ import java.util.List;
 
 public class Cutscene {
 
-    public enum Type {
-        LOCAL,
-        GLOBAL
-    }
-
     private  List<CutsceneKeyFrame> keyFrames;
-
-    private final Type type;
 
     private final float duration;
 
-    public Cutscene(Type type, List<CutsceneKeyFrame> keyFrames, float duration, int interpolation) {
-        this.type = type;
+    public Cutscene(List<CutsceneKeyFrame> keyFrames, float duration, int interpolation) {
         this.keyFrames = new ArrayList<>();
         this.duration = duration;
         List<FastVec3f> curve = new ArrayList<>();
@@ -43,14 +35,14 @@ public class Cutscene {
         return duration;
     }
 
-    public Type getType() {
-        return type;
-    }
-
     public List<CutsceneKeyFrame> getKeyFrames() {
         return keyFrames;
     }
 
+    /// x+ is right
+    /// x- is left
+    /// z+ is front
+    /// z- is back
     public static class CutsceneKeyFrame {
 
         private final FastVec3f position;
