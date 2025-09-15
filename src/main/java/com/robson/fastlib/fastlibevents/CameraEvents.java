@@ -75,8 +75,9 @@ public class CameraEvents {
             public void onTick(Context args) {
                 final Vec3 oldpos = args.player().position();
                 Scheduler.schedule(() -> {
-                    FastVec3f delta = new FastVec3f((float) (args.player().getX() - oldpos.x), (float) (args.player().getY() - oldpos.y), (float) (args.player().getZ() - oldpos.z));
-                    float zmodifier = 0f;
+                    FastVec3f delta = new FastVec3f((float) (args.player().getX() - oldpos.x), (float) (args.player().getY() - oldpos.y), (float) (args.player().getZ() - oldpos.z))
+                            .scale(2f);
+                    float zmodifier = -0.25f;
                     float tomodifyz = 1;
                     for (int i = 0; i < 10; i++) {
                         if (args.player().level().getBlockState(args.player().blockPosition().offset(0, i, 0)).isSolid()) {
@@ -100,8 +101,8 @@ public class CameraEvents {
                     if (args.player().getVehicle() != null) {
                         zmodifier += args.player().getVehicle().getBbHeight() / 5;
                     }
-                    float xmodifier = istargeting ? 0 : -0.5f ;
-                    float ymodifier = -0.05f + (zmodifier / 5);
+                    float xmodifier = istargeting ? 0 : -0.5f - (zmodifier / 20) ;
+                    float ymodifier = 0.05f + (zmodifier / 40);
                     if (istargeting) {
                         ymodifier += 0.75f + (args.playerData().getCamera().getTarget().getBbHeight() / 10);
                         zmodifier += 0.25f + (args.playerData().getCamera().getTarget().getBbHeight() / 10);

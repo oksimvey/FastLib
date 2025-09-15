@@ -51,7 +51,7 @@ public class CustomCam {
     public CustomCam(float initYaw, float initPitch, FastVec3f initPos) {
         this.smoothYaw = new SmoothFloat(initYaw, smoothFactor);
         this.smoothPitch = new SmoothFloat(initPitch, smoothFactor);
-        this.smoothPosition = new SmoothVec3(initPos, 0.025f);
+        this.smoothPosition = new SmoothVec3(initPos, smoothFactor * 0.75f);
     }
 
     public boolean isDecoupled() {
