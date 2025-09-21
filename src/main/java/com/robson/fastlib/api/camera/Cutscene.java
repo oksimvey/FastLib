@@ -13,7 +13,7 @@ public class Cutscene {
 
     private final float duration;
 
-    public Cutscene(List<CutsceneKeyFrame> keyFrames, float duration, int interpolation) {
+    public Cutscene(float duration, int interpolation, CutsceneKeyFrame... keyFrames) {
         this.keyFrames = new ArrayList<>();
         this.duration = duration;
         List<FastVec3f> curve = new ArrayList<>();

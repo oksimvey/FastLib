@@ -1,9 +1,9 @@
 package com.robson.fastlib.mixins;
 
 
+import com.mojang.math.Axis;
 import com.robson.fastlib.api.camera.CustomCam;
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
-import com.robson.fastlib.api.data.types.PlayerData;
 import com.robson.fastlib.api.utils.math.FastLibMathUtils;
 import com.robson.fastlib.api.utils.math.FastVec2f;
 import com.robson.fastlib.api.utils.math.FastVec3f;
@@ -17,11 +17,16 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static com.mojang.math.Axis.XP;
 
 @Mixin(Camera.class)
 public abstract class CameraInvoker {
@@ -49,6 +54,8 @@ public abstract class CameraInvoker {
     @Shadow private float eyeHeightOld;
 
     @Shadow private float eyeHeight;
+
+    @Shadow @Final private Quaternionf rotation;
 
     @Inject(method = "setup", at = @At(value = "HEAD"), cancellable = true)
     public void setup(BlockGetter p_90576_, Entity p_90577_, boolean p_90578_, boolean p_90579_, float p_90580_, CallbackInfo ci) {
@@ -81,7 +88,8 @@ public abstract class CameraInvoker {
                         this.setRotation(this.yRot + 180.0F, -this.xRot);
                     }
                     this.move(-this.getMaxZoom(4.0D), 0.0D, 0.0D);
-                } else if (p_90577_ instanceof LivingEntity && ((LivingEntity) p_90577_).isSleeping()) {
+                }
+                else if (p_90577_ instanceof LivingEntity && ((LivingEntity) p_90577_).isSleeping()) {
                     Direction direction = ((LivingEntity) p_90577_).getBedOrientation();
                     this.setRotation(direction != null ? direction.toYRot() - 180.0F : 0.0F, 0.0F);
                     this.move(0.0D, 0.3D, 0.0D);

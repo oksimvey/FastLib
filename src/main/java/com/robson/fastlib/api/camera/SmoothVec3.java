@@ -25,7 +25,8 @@ public class SmoothVec3 implements CameraSmoother<FastVec3f> {
 
     @Override
     public void update(float deltaTime) {
-        float alpha = 1f - (float) Math.exp(-factor * deltaTime);
+        float alpha = (1f - (float)Math.exp(-factor * deltaTime));
+
         FastVec3f diff = target.sub(current).scale(alpha);
         current = current.add(diff);
     }
