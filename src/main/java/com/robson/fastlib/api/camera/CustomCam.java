@@ -13,7 +13,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.joml.SimplexNoise;
+import org.joml.Vector3d;
 
+import javax.xml.crypto.dsig.Transform;
 import java.util.concurrent.TimeUnit;
 
 public class CustomCam {
@@ -26,6 +29,7 @@ public class CustomCam {
 
     private final SmoothFloat smoothYaw;
     private final SmoothFloat smoothPitch;
+    private final SmoothFloat smoothRoll;
     private final SmoothVec3 smoothPosition;
     boolean targetcooldown = false;
     private final Minecraft mc ;
@@ -42,6 +46,10 @@ public class CustomCam {
         this.decoupled = decoupled;
     }
 
+    public Minecraft getMc() {
+        return mc;
+    }
+
     public void setTarget(LivingEntity target) {
         this.target = target;
     }
@@ -50,10 +58,11 @@ public class CustomCam {
         return target;
     }
 
-    public CustomCam(float initYaw, float initPitch, FastVec3f initPos) {
-        this.smoothYaw = new SmoothFloat(initYaw, smoothFactor);
-        this.smoothPitch = new SmoothFloat(initPitch, smoothFactor);
-        this.smoothPosition = new SmoothVec3(initPos, smoothFactor);
+    public CustomCam() {
+        this.smoothYaw = new SmoothFloat(0, smoothFactor);
+        this.smoothPitch = new SmoothFloat(0, smoothFactor);
+        this.smoothRoll = new SmoothFloat(0, smoothFactor);
+        this.smoothPosition = new SmoothVec3(new FastVec3f(0, 0,0 ), smoothFactor);
         this.mc = Minecraft.getInstance();
     }
 
@@ -111,6 +120,10 @@ public class CustomCam {
         return new FastVec2f(smoothYaw.getCurrent(), smoothPitch.getCurrent());
     }
 
+    public float getRoll(){
+        return smoothRoll.getCurrent();
+    }
+
     public FastVec3f getOffset() {
         return smoothPosition.getCurrent();
     }
@@ -159,10 +172,14 @@ public class CustomCam {
 
         smoothYaw.update(deltaTime);
         smoothPitch.update(deltaTime);
+        smoothRoll.update(deltaTime);
         smoothPosition.update(deltaTime);
 
     }
 
+   public void setRoll(float roll) {
+        this.smoothRoll.setTarget(roll);
+   }
     public void selectNearestTarget(LivingEntity referenceEntity, Vec3 referencePosition, float searchradius, boolean targetChange){
         if (searchradius > 50){
             searchradius = 50;

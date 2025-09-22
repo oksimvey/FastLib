@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -18,7 +19,7 @@ import java.util.List;
 @Mod.EventBusSubscriber
 public class PlayerSetupEvents {
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerLoggedInEvent(PlayerEvent.PlayerLoggedInEvent event){
         if (event.getEntity() != null){
            PlayerCustomTickManager.startTick(event.getEntity());
@@ -26,14 +27,14 @@ public class PlayerSetupEvents {
     }
 
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event){
         if (event.getEntity() != null){
            PlayerCustomTickManager.stopTick(event.getEntity());
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onClonned(PlayerEvent.Clone event){
         if (event.isWasDeath()) {
             PlayerCustomTickManager.startRespawnTick(event.getEntity());

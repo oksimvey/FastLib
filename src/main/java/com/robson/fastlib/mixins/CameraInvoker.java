@@ -1,7 +1,6 @@
 package com.robson.fastlib.mixins;
 
 
-import com.mojang.math.Axis;
 import com.robson.fastlib.api.camera.CustomCam;
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
 import com.robson.fastlib.api.utils.math.FastLibMathUtils;
@@ -17,18 +16,16 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.mojang.math.Axis.XP;
-
-@Mixin(Camera.class)
+@Mixin(value = Camera.class, priority = 1001)
+@OnlyIn(Dist.CLIENT)
 public abstract class CameraInvoker {
 
     @Shadow private boolean initialized;
@@ -54,8 +51,6 @@ public abstract class CameraInvoker {
     @Shadow private float eyeHeightOld;
 
     @Shadow private float eyeHeight;
-
-    @Shadow @Final private Quaternionf rotation;
 
     @Inject(method = "setup", at = @At(value = "HEAD"), cancellable = true)
     public void setup(BlockGetter p_90576_, Entity p_90577_, boolean p_90578_, boolean p_90579_, float p_90580_, CallbackInfo ci) {

@@ -8,6 +8,8 @@ import com.robson.fastlib.api.data.types.PlayerData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,8 +27,10 @@ import javax.annotation.Nullable;
 public class TargetMarker extends EntityUI {
 
     public static final TargetMarker Instance = new TargetMarker();
-
     public static final ResourceLocation STATUS_BAR = new ResourceLocation("fastlib", "textures/gui/marker.png");
+
+    private static long lastTime = 0;
+    private static float rotationAngle = 0.0F;
 
     public boolean shouldDraw(LivingEntity entity, @Nullable LivingEntityPatch<?> entitypatch, LocalPlayerPatch playerpatch, float partialTicks) {
         PlayerData data = PlayerDataManager.get(playerpatch.getOriginal());
@@ -35,137 +39,98 @@ public class TargetMarker extends EntityUI {
     }
 
     public void draw(LivingEntity entity, @Nullable LivingEntityPatch<?> entitypatch, LocalPlayerPatch playerpatch, PoseStack poseStack, MultiBufferSource buffers, float partialTicks) {
-        float scale = 0.5f +  0.25f * (entity.getBbHeight() / 1.8f);
-       renderLockOnIndicator(poseStack, entity, scale);
+        float scale = 0.5f + 0.25f * (entity.getBbHeight() / 1.8f);
+        renderLockOnIndicator(poseStack, entity, scale, buffers);
     }
 
-
-    private static long lastTime = 0;
-    private static float rotationAngle = 0.0F;
-
-    /**
-     * Main rendering method with enhanced features - now only renders the indicator
-     */
-    public static void renderLockOnIndicator(PoseStack param, Entity target, float scale) {
+    public static void renderLockOnIndicator(PoseStack poseStack, Entity target, float scale, MultiBufferSource buffers) {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null || minecraft.player == null || target == null) return;
 
-        // Update animations
         updateAnimations();
 
-        // Get the camera position
         Vec3 cameraPos = minecraft.gameRenderer.getMainCamera().getPosition();
-
-        // Get position of the entity with configurable offset
         Vec3 targetPos = target.position().add(0, target.getBbHeight() + 0.25f, 0);
 
-        // Calculate relative position
         float x = (float) (targetPos.x - cameraPos.x);
         float y = (float) (targetPos.y - cameraPos.y);
         float z = (float) (targetPos.z - cameraPos.z);
 
-        // Set up rendering
-        param.pushPose();
+        poseStack.pushPose();
 
-        // Move to the target position
-        param.translate(x, y, z);
+        // posiciona no mundo e alinha pra câmera
+        poseStack.translate(x, y, z);
+        poseStack.mulPose(minecraft.gameRenderer.getMainCamera().rotation());
+        poseStack.mulPose(new org.joml.Quaternionf().rotationY((float) Math.PI));
 
-        // Make the indicator always face the camera
-        param.mulPose(minecraft.gameRenderer.getMainCamera().rotation());
-        param.mulPose(new org.joml.Quaternionf().rotationY((float) Math.PI));
+        // aplica rotação local do sprite
+        poseStack.pushPose();
+        poseStack.mulPose(new org.joml.Quaternionf().rotationZ(rotationAngle * (float) Math.PI / 180.0f));
 
-        // Set up render system
+        // prevent depth writes (importantíssimo com shaders que fazem múltiplas passes)
         RenderSystem.disableDepthTest();
-        RenderSystem.disableCull();
+        RenderSystem.depthMask(false);
+
+        // set shader + texture for buffer (RenderType will also set shader, mas isso garante)
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
 
-        // Calculate dynamic size
+        // --- background quad com RenderType custom ---
+        VertexConsumer quad = buffers.getBuffer(LockOnRenderTypes.getLockOnQuads(STATUS_BAR));
+        Matrix4f matrix = poseStack.last().pose();
+        // cores em floats (r,g,b,a)
+        float r = 1f, g = 1f, b = 1f, a = 1f;
 
-        // Calculate dynamic color
+        quad.vertex(matrix, -scale, -scale, 0.0F).uv(0.0F, 1.0F).color(r, g, b, a).endVertex();
+        quad.vertex(matrix,  scale, -scale, 0.0F).uv(1.0F, 1.0F).color(r, g, b, a).endVertex();
+        quad.vertex(matrix,  scale,  scale, 0.0F).uv(1.0F, 0.0F).color(r, g, b, a).endVertex();
+        quad.vertex(matrix, -scale,  scale, 0.0F).uv(0.0F, 0.0F).color(r, g, b, a).endVertex();
 
-        renderCustomIndicator(param, scale);
 
-        // Clean up rendering
-        RenderSystem.enableCull();
+        RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
         RenderSystem.disableBlend();
 
-        param.popPose();
+        poseStack.popPose(); // pop rotação local
+        poseStack.popPose(); // pop translate/align
     }
 
-    /**
-     * Renders custom image indicator with rotation and color tinting
-     */
-    private static void renderCustomIndicator(PoseStack poseStack, float size) {
-        poseStack.pushPose();
-
-        // Apply rotation animation
-        poseStack.mulPose(new org.joml.Quaternionf().rotationZ(rotationAngle * (float) Math.PI / 180.0f));
-
-        // Get the current custom indicator texture
-
-        // Set up texture rendering
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, STATUS_BAR);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        Matrix4f matrix = poseStack.last().pose();
-
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-
-        // Define the quad vertices for the texture
-
-        // Bottom-left
-        bufferBuilder.vertex(matrix, -size, -size, 0.0F)
-                .uv(0.0F, 1.0F)  // Bottom-left UV
-                .color(255, 255,  255,  255)
-                .endVertex();
-
-        // Bottom-right
-        bufferBuilder.vertex(matrix, size, -size, 0.0F)
-                .uv(1.0F, 1.0F)  // Bottom-right UV
-                .color(255, 255,  255,  255)
-                .endVertex();
-
-        // Top-right
-        bufferBuilder.vertex(matrix, size, size, 0.0F)
-                .uv(1.0F, 0.0F)  // Top-right UV
-                .color(255, 255,  255,  255)
-                .endVertex();
-
-        // Top-left
-        bufferBuilder.vertex(matrix, -size, size, 0.0F)
-                .uv(0.0F, 0.0F)  // Top-left UV
-                .color(255, 255,  255,  255)
-                .endVertex();
-
-        BufferUploader.drawWithShader(bufferBuilder.end());
-
-        poseStack.popPose();
-    }
-
-    /**
-     * Updates all animation effects
-     */
     private static void updateAnimations() {
         long currentTime = System.currentTimeMillis();
-
-        // First time initialization
-        if (lastTime == 0) {
-            lastTime = currentTime;
-        }
-
-        float deltaTime = (currentTime - lastTime) / 1000.0F;
-
-        // Calculate rotation for animated indicators
-        rotationAngle += deltaTime *  30.0F; // 30 degrees per second
-        if (rotationAngle >= 360.0F) {
-            rotationAngle -= 360.0F;
-        }
-
+        if (lastTime == 0) lastTime = currentTime;
+        float delta = (currentTime - lastTime) / 1000.0F;
+        rotationAngle += delta * 30.0F;
+        if (rotationAngle >= 360.0F) rotationAngle -= 360.0F;
         lastTime = currentTime;
+    }
+
+    public static class LockOnRenderTypes extends RenderType {
+
+        protected LockOnRenderTypes(String name, VertexFormat format, VertexFormat.Mode mode, int bufferSize,
+                                    boolean affectsCrumbling, boolean sortOnUpload,
+                                    Runnable setupState, Runnable clearState) {
+            super(name, format, mode, bufferSize, affectsCrumbling, sortOnUpload, setupState, clearState);
+        }
+
+        public static RenderType getLockOnQuads(ResourceLocation texture) {
+            CompositeState composite = CompositeState.builder()
+                    .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
+                    .setTransparencyState(TransparencyStateShard.NO_TRANSPARENCY)     // blending apropriado
+                    .setDepthTestState(DepthTestStateShard.NO_DEPTH_TEST)         // <<< sem teste de profundidade
+                    .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader))
+                    .setLightmapState(LightmapStateShard.LIGHTMAP)
+                    .setOverlayState(OverlayStateShard.OVERLAY)
+                    .setCullState(CullStateShard.NO_CULL)                    // sem culling
+                    .createCompositeState(true);
+
+            return RenderType.create("fastlib:lock_on_quads",
+                    DefaultVertexFormat.POSITION_TEX_COLOR,
+                    VertexFormat.Mode.QUADS,
+                    256,
+                    true,
+                    false,
+                    composite);
+        }
     }
 }

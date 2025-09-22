@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 public class OnRenderGUI {
 
     @SubscribeEvent
-    public static void onRenderGUI(RenderGuiOverlayEvent event){
+    public static void onRenderGUI(RenderGuiOverlayEvent event) {
         OnRenderGUIEvent.EVENT_MANAGER.shotEvents(new OnRenderGUIEvent.Context(event.getGuiGraphics(),
                 event.getPartialTick(), Minecraft.getInstance().player, Minecraft.getInstance(), event.getWindow().getGuiScaledHeight(),
                 event.getWindow().getGuiScaledWidth()));

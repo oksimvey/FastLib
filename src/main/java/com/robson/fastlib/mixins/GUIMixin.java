@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Objects;
 
-@Mixin(Gui.class)
+@Mixin(value = Gui.class, priority = 1001)
 @OnlyIn(Dist.CLIENT)
 public class GUIMixin {
 
@@ -28,7 +28,7 @@ public class GUIMixin {
 
     @Redirect(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/CameraType;isFirstPerson()Z"))
     private boolean isFirstPerson(CameraType cameraType) {
-        return Objects.requireNonNull(PlayerDataManager.get(this.minecraft.player)).getCamera().getTarget() == null;
+        return Objects.requireNonNull(PlayerDataManager.get(this.minecraft.player)).getCamera().getTarget() == null || cameraType.isFirstPerson();
     }
 }
 

@@ -1,7 +1,6 @@
 package com.robson.fastlib.fastlibevents;
 
 import com.robson.fastlib.api.camera.CustomCam;
-import com.robson.fastlib.api.camera.Cutscene;
 import com.robson.fastlib.api.data.manager.PlayerDataManager;
 import com.robson.fastlib.api.events.manager.PlayerCustomTickManager;
 import com.robson.fastlib.api.events.types.FastLibPlayerEvent;
@@ -10,11 +9,14 @@ import com.robson.fastlib.api.keybinding.KeyHandler;
 import com.robson.fastlib.api.registries.RegisteredKeybinding;
 import com.robson.fastlib.api.utils.Scheduler;
 import com.robson.fastlib.api.utils.TargetUtils;
+import com.robson.fastlib.api.utils.VfxUtils;
 import com.robson.fastlib.api.utils.math.FastLibMathUtils;
-import com.robson.fastlib.api.utils.math.FastVec2f;
 import com.robson.fastlib.api.utils.math.FastVec3f;
+import com.robson.fastlib.events.ParticleRegister;
 import com.robson.fastlib.events.RegisterKeybinding;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -46,8 +48,7 @@ public class CameraEvents {
                 CustomCam cam = PlayerDataManager.get(player).getCamera();
                 if (cam.getTarget() == null) {
                     cam.selectNearestTarget(player, player.position(), 50, false);
-                }
-                else cam.setTarget(null);
+                } else cam.setTarget(null);
             }
         });
 
@@ -67,7 +68,7 @@ public class CameraEvents {
             public void onTick(Context args) {
                 boolean intial = !KeyHandler.isKeyDown(Minecraft.getInstance().options.keyUse);
                 if (intial) {
-                   intial = !(args.playerPatch().getEntityState().attacking()) || args.player().getVehicle() != null;
+                    intial = !(args.playerPatch().getEntityState().attacking()) || args.player().getVehicle() != null;
                 }
                 args.playerData().getCamera().setDecoupled(intial);
             }
@@ -88,15 +89,20 @@ public class CameraEvents {
                             (float) (args.player().getX() - oldpos.x),
                             (float) (args.player().getY() - oldpos.y),
                             (float) (args.player().getZ() - oldpos.z));
+
                     float zmodifier = -1f;
                     float tomodifyz = 1;
-                    for (int i = 0; i < 10; i++) {
+                    for (int i = 1; i < 10; i++) {
                         if (args.player().level().getBlockState(args.player().blockPosition().offset(0, i, 0)).isSolid()) {
-                            tomodifyz = zmodifier * (1f / (minimum(i))) * 10;
+                            tomodifyz = zmodifier * (1f / (minimum(i))) * 5;
                             zmodifier -= tomodifyz;
                             break;
                         }
                     }
+                    short angle = (short) Mth.wrapDegrees(args.playerData().getKeyHandler().getKeyboardInput().getInputAngle() + (args.playerData().getCamera().getMc().cameraEntity.getYRot()));
+                    FastVec3f rotated = delta.rotate(angle);
+                    args.playerData().getCamera().setRoll(rotated.x() * 5f);
+
                     zmodifier += (float) (tomodifyz * Math.min(5, Math.exp(delta.length() * 0.25)));
                     RenderItemBase render = ClientEngine.getInstance().renderEngine.getItemRenderer(args.player().getMainHandItem());
                     if (render != null) {
@@ -139,9 +145,9 @@ public class CameraEvents {
                         }
                         ymodifier += (targetingSizeModifier / 20) + (targetingEntities / 100f);
                         zmodifier += targetingSizeModifier + targetingEntities / 5f;
+
+
                     }
-
-
                     args.playerData().getCamera().setPos(new FastVec3f(xmodifier, ymodifier, -zmodifier));
                 }, 250, TimeUnit.MILLISECONDS);
 

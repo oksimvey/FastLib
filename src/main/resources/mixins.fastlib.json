@@ -10,11 +10,14 @@
   "client": [
     "CameraInvoker",
     "CameraTypeMixin",
+    "ControlEngineMixin",
+    "GameRendererMixin",
     "GUIMixin",
     "LivingEntityRendererMixin",
     "LocalPlayerMixin",
     "MouseHandlerMixin",
     "PatchedLivingRendererMixin",
+    "RenderEngineMixin",
     "SkinnedMeshMixin"
   ]
 }
