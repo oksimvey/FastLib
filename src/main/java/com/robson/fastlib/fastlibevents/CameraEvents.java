@@ -9,17 +9,16 @@ import com.robson.fastlib.api.keybinding.KeyHandler;
 import com.robson.fastlib.api.registries.RegisteredKeybinding;
 import com.robson.fastlib.api.utils.Scheduler;
 import com.robson.fastlib.api.utils.TargetUtils;
-import com.robson.fastlib.api.utils.VfxUtils;
 import com.robson.fastlib.api.utils.math.FastLibMathUtils;
 import com.robson.fastlib.api.utils.math.FastVec3f;
-import com.robson.fastlib.events.ParticleRegister;
 import com.robson.fastlib.events.RegisterKeybinding;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BowItem;
 import net.minecraft.world.phys.Vec3;
 import yesman.epicfight.api.client.animation.property.TrailInfo;
 import yesman.epicfight.client.ClientEngine;
@@ -28,6 +27,7 @@ import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.skill.SkillDataKey;
 import yesman.epicfight.skill.SkillDataKeys;
 import yesman.epicfight.skill.SkillDataManager;
+import yesman.epicfight.world.capabilities.item.RangedWeaponCapability;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,8 @@ public class CameraEvents {
                 CustomCam cam = PlayerDataManager.get(player).getCamera();
                 if (cam.getTarget() == null) {
                     cam.selectNearestTarget(player, player.position(), 50, false);
-                } else cam.setTarget(null);
+                }
+                else cam.setTarget(null);
             }
         });
 
@@ -67,10 +68,67 @@ public class CameraEvents {
             @Override
             public void onTick(Context args) {
                 boolean intial = !KeyHandler.isKeyDown(Minecraft.getInstance().options.keyUse);
-                if (intial) {
+                if (!intial && args.playerData().getCamera().getTarget() != null) {
+                    args.playerData().getCamera().setDecoupled(true);
+                    return;
+                }
+                 if (intial) {
                     intial = !(args.playerPatch().getEntityState().attacking()) || args.player().getVehicle() != null;
                 }
                 args.playerData().getCamera().setDecoupled(intial);
+                if (args.player().tickCount % 2 == 0) {
+
+                    if (args.playerData().getCamera().getTarget() == null) {
+                        final Vec3 oldpos = args.player().position();
+                        Scheduler.schedule(() -> {
+                            FastVec3f delta = new FastVec3f(
+                                    (float) (args.player().getX() - oldpos.x),
+                                    (float) (args.player().getY() - oldpos.y),
+                                    (float) (args.player().getZ() - oldpos.z)).scale(2.5f);
+
+                            float speed = delta.length();
+
+                            Vec3 forward = args.player().getLookAngle().normalize();
+                            Vec3 up = new Vec3(0, 1, 0);
+                            Vec3 right = forward.cross(up).normalize();
+                            float lateral = (float) delta.toVec3().dot(right);
+                            lateral = Mth.clamp(lateral, -1f, 1f); // limita a projeção
+
+
+                            float intensity = (float) Math.tanh(speed * 5f); // 0 → 1 de forma suave
+                            float targetRoll = lateral * 3f * intensity;
+
+
+                            if (delta.length() < 0.01f) {
+                                targetRoll = 0;
+                            }
+                            args.playerData().getCamera().setRoll(targetRoll);
+
+                            float currentPitch = args.playerData().getCamera().getRotation().y();
+
+// offset alvo
+                            float vertical = (float) delta.toVec3().dot(up);
+                            float forwardSpeed = (float) delta.toVec3().dot(forward);
+
+                            vertical = Mth.clamp(vertical, -1f, 1f);
+                            forwardSpeed = Mth.clamp(forwardSpeed, -1f, 1f);
+
+                            float pitchIntensity = (float) Math.tanh(speed * 5f);
+                            float targetPitch = (vertical * 10f + forwardSpeed * 2f) * pitchIntensity;
+
+                            if (delta.length() < 0.01f) {
+                                targetPitch = 0;
+                            }
+
+                            float alpha = 0.15f;
+                            float newPitch = Mth.lerp(alpha, currentPitch, currentPitch + targetPitch);
+
+                            args.playerData().getCamera().handleRotation(0f, newPitch - currentPitch);
+
+                        }, 100, TimeUnit.MILLISECONDS);
+                    }
+                    else args.playerData().getCamera().setRoll(0);
+                }
             }
         });
 
@@ -99,11 +157,8 @@ public class CameraEvents {
                             break;
                         }
                     }
-                    short angle = (short) Mth.wrapDegrees(args.playerData().getKeyHandler().getKeyboardInput().getInputAngle() + (args.playerData().getCamera().getMc().cameraEntity.getYRot()));
-                    FastVec3f rotated = delta.rotate(angle);
-                    args.playerData().getCamera().setRoll(rotated.x() * 5f);
 
-                    zmodifier += (float) (tomodifyz * Math.min(5, Math.exp(delta.length() * 0.25)));
+                    zmodifier += (float) (tomodifyz * Math.min(5, Math.exp(delta.length()* 0.25)));
                     RenderItemBase render = ClientEngine.getInstance().renderEngine.getItemRenderer(args.player().getMainHandItem());
                     if (render != null) {
                         TrailInfo info = render.trailInfo();
@@ -145,7 +200,6 @@ public class CameraEvents {
                         }
                         ymodifier += (targetingSizeModifier / 20) + (targetingEntities / 100f);
                         zmodifier += targetingSizeModifier + targetingEntities / 5f;
-
 
                     }
                     args.playerData().getCamera().setPos(new FastVec3f(xmodifier, ymodifier, -zmodifier));

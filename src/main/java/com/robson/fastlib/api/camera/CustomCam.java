@@ -1,6 +1,7 @@
 package com.robson.fastlib.api.camera;
 
 
+import com.robson.fastlib.api.keybinding.KeyHandler;
 import com.robson.fastlib.api.utils.Scheduler;
 import com.robson.fastlib.api.utils.math.FastLibMathUtils;
 import com.robson.fastlib.api.utils.math.FastVec2f;
@@ -67,7 +68,7 @@ public class CustomCam {
     }
 
     public boolean isDecoupled() {
-        return isCutsceneActive() || mc.player.getVehicle() != null || (decoupled && !mc.options.getCameraType().isFirstPerson() && target == null);
+        return isCutsceneActive() || (this.target != null && mc.player.getVehicle() != null && !KeyHandler.isKeyDown(Minecraft.getInstance().options.keyUse)) || (decoupled && !mc.options.getCameraType().isFirstPerson() && target == null);
     }
 
     public boolean isEnabled() {
@@ -85,8 +86,16 @@ public class CustomCam {
         smoothYaw.setCurrent(smoothYaw.getCurrent() + yaw * 0.13f);
         smoothPitch.setCurrent(Mth.clamp(smoothPitch.getCurrent() + pitch * 0.13f, -70, 70));
         if (mc.player != null) {
-            mc.player.setXRot(this.target != null ? smoothPitch.getCurrent() - 10 : smoothPitch.getCurrent());
-            if (!isDecoupled()) mc.player.setYRot(smoothYaw.getCurrent());
+           byte offset = (byte) (mc.player.getVehicle() != null ? 15 : 10);
+            mc.player.setXRot(this.target != null ?
+                    mc.player.getVehicle() != null ?
+                            smoothPitch.getCurrent() - (offset / ( target.distanceTo(mc.player) * 0.005f + 1)) :
+                            smoothPitch.getCurrent() - offset : smoothPitch.getCurrent());
+            if (!isDecoupled()) {
+                mc.player.setYRot(smoothYaw.getCurrent());
+                mc.player.setYHeadRot(smoothYaw.getCurrent());
+            }
+
         }
     }
 
@@ -122,6 +131,10 @@ public class CustomCam {
 
     public float getRoll(){
         return smoothRoll.getCurrent();
+    }
+
+    public void setPitch(float pitch) {
+        this.smoothPitch.setTarget(pitch);
     }
 
     public FastVec3f getOffset() {
